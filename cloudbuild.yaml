@@ -1,0 +1,37 @@
+substitutions:
+  _VERSION: "1.5.1"
+  _ARTIFACT_BUCKET: "REPLACE_WITH_YOUR_BUCKET_NAME"
+
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "virtual-scanner-builder"
+      - "-f"
+      - "ci/Dockerfile"
+      - "."
+
+  - name: "virtual-scanner-builder"
+    env:
+      - "VERSION=${_VERSION}"
+    args:
+      - "bash"
+      - "scripts/build-installer.sh"
+
+artifacts:
+  objects:
+    location: "gs://${_ARTIFACT_BUCKET}/virtual-scanner/${BUILD_ID}/"
+    paths:
+      - "dist/x64/VirtualScanner.ds"
+      - "dist/x86/VirtualScanner.ds"
+      - "dist/arm64/VirtualScanner.ds"
+      - "dist/VirtualScanner-${_VERSION}-x64-setup.exe"
+      - "dist/VirtualScanner-${_VERSION}-x86-setup.exe"
+      - "dist/VirtualScanner-${_VERSION}-arm64-setup.exe"
+      - "dist/VirtualScanner-${_VERSION}-x64.zip"
+      - "dist/VirtualScanner-${_VERSION}-x86.zip"
+      - "dist/VirtualScanner-${_VERSION}-arm64.zip"
+      - "dist/VirtualScanner-${_VERSION}-x64-portable.zip"
+      - "dist/VirtualScanner-${_VERSION}-x86-portable.zip"
+      - "dist/VirtualScanner-${_VERSION}-arm64-portable.zip"

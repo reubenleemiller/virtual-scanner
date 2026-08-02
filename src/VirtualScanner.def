@@ -1,0 +1,3 @@
+LIBRARY VirtualScanner
+EXPORTS
+    DS_Entry
