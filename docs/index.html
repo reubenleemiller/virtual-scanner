@@ -565,7 +565,7 @@
         showToast(`Preparing ${label} download...`);
 
         const timer = window.setInterval(() => {
-          progress = Math.min(100, progress + Math.ceil(Math.random() * 8));
+          progress = Math.min(100, progress + 1);
           ring.style.setProperty("--progress", progress);
           text.textContent = `${progress}%`;
 
@@ -578,7 +578,7 @@
               window.location.href = url;
             }, 250);
           }
-        }, 90);
+        }, 24);
       }
 
       downloadButtons.forEach((button) => {
