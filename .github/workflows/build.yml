@@ -64,6 +64,9 @@ jobs:
             virtual-scanner-builder \
             bash scripts/build-installer.sh
 
+      - name: Normalize artifact ownership
+        run: sudo chown -R "$(id -u):$(id -g)" build dist
+
       - name: Generate checksums
         run: |
           set -euo pipefail
