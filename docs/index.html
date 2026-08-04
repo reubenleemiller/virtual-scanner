@@ -141,11 +141,11 @@
         <div class="mt-6 flex flex-wrap gap-3">
           <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml">
             <span class="mini-spinner" aria-hidden="true"></span>
-            View CI builds
+            <span class="button-label">View CI builds</span>
           </a>
-          <button type="button" class="primary-button" data-close-modal>
+          <button type="button" class="primary-button" data-close-modal data-action-button>
             <span class="mini-spinner" aria-hidden="true"></span>
-            Got it
+            <span class="button-label">Got it</span>
           </button>
         </div>
       </div>
@@ -167,7 +167,7 @@
       </nav>
       <button type="button" class="secondary-button !px-3 sm:!px-4" data-modal>
         <span class="mini-spinner" aria-hidden="true"></span>
-        Signing
+        <span class="button-label">Signing</span>
       </button>
     </header>
 
@@ -194,15 +194,15 @@
               data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe"
             >
               <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-              Download x86 installer
+              <span class="button-label">Download x86 installer</span>
             </button>
             <a class="secondary-button" href="#downloads">
               <span class="mini-spinner" aria-hidden="true"></span>
-              More builds
+              <span class="button-label">More builds</span>
             </a>
           </div>
           <p class="mt-4 text-sm text-slate-600">
-            Use x86 for most ExamView installations, even inside Windows 11 ARM64.
+            Use x86 for most 32-bit TWAIN applications, even inside Windows 11 ARM64.
           </p>
         </div>
 
@@ -244,18 +244,18 @@
             </div>
             <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">
               <span class="mini-spinner" aria-hidden="true"></span>
-              Release notes
+              <span class="button-label">Release notes</span>
             </a>
           </div>
 
           <div class="mt-8 grid gap-4 lg:grid-cols-3">
             <article class="download-card">
-              <span class="badge">Most ExamView installs</span>
+              <span class="badge">Most legacy apps</span>
               <h3>x86 installer</h3>
-              <p>For 32-bit TWAIN applications on Windows, including most ExamView setups.</p>
+              <p>For 32-bit TWAIN applications on Windows, including many older desktop workflows.</p>
               <button type="button" class="download-button w-full" data-download data-label="x86 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                Download x86
+                <span class="button-label">Download x86</span>
               </button>
             </article>
             <article class="download-card">
@@ -264,7 +264,7 @@
               <p>For 64-bit Intel TWAIN applications running on Windows x64 or emulated ARM64.</p>
               <button type="button" class="download-button w-full" data-download data-label="x64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x64-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                Download x64
+                <span class="button-label">Download x64</span>
               </button>
             </article>
             <article class="download-card">
@@ -273,7 +273,7 @@
               <p>For native ARM64 TWAIN applications with a native ARM64 TWAIN DSM.</p>
               <button type="button" class="download-button w-full" data-download data-label="ARM64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-arm64-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                Download ARM64
+                <span class="button-label">Download ARM64</span>
               </button>
             </article>
           </div>
@@ -281,6 +281,15 @@
       </section>
 
       <section id="how-it-works" class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <div class="mb-8 max-w-3xl">
+          <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Workflow</p>
+          <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Built for stubborn legacy scan dialogs</h2>
+          <p class="mt-4 text-base leading-7 text-slate-700">
+            Some classroom, testing, records, and office applications still expect a scanner
+            source even when the document already exists as a file. Virtual Scanner gives those
+            applications a familiar TWAIN source while keeping the files local on the Windows machine.
+          </p>
+        </div>
         <div class="grid gap-5 md:grid-cols-3">
           <div class="info-tile">
             <span>01</span>
@@ -299,14 +308,83 @@
           </div>
         </div>
       </section>
+
+      <section class="border-y border-sky-100 bg-white/70 py-16">
+        <div class="mx-auto grid max-w-7xl gap-5 px-5 sm:px-8 lg:grid-cols-[.95fr_1.05fr]">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Trust and transparency</p>
+            <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Open source, reproducible releases, local files.</h2>
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              The source code, installer script, release workflow, privacy policy, and license are public.
+              GitHub Actions builds the release files from that source, and each release can include SHA256
+              checksums so downloads can be verified.
+            </p>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="info-tile">
+              <span>MIT</span>
+              <h3>Permissive license</h3>
+              <p>Use, study, modify, and redistribute the project under the MIT License.</p>
+            </div>
+            <div class="info-tile">
+              <span>CI</span>
+              <h3>Automated builds</h3>
+              <p>Windows installers and portable packages are produced by GitHub Actions.</p>
+            </div>
+            <div class="info-tile">
+              <span>Local</span>
+              <h3>No data collection</h3>
+              <p>Selected files stay on the user's Windows computer unless shared separately.</p>
+            </div>
+            <div class="info-tile">
+              <span>TWAIN</span>
+              <h3>Legacy compatible</h3>
+              <p>Designed for TWAIN-compatible apps that need a scanner-style source.</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
 
-    <footer class="border-t border-sky-100 bg-white/70">
-      <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-        <p>MIT licensed. Built from public source with GitHub Actions.</p>
-        <div class="flex gap-4">
-          <a class="font-semibold hover:text-reef" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md">Privacy</a>
-          <a class="font-semibold hover:text-reef" href="https://github.com/reubenleemiller/virtual-scanner">Source</a>
+    <footer class="bg-ink text-white">
+      <div class="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-8 md:grid-cols-[1.2fr_.8fr_.8fr]">
+        <div>
+          <div class="flex items-center gap-3">
+            <img src="./assets/virtual-scanner-icon.png" alt="" class="h-10 w-10 rounded-lg" />
+            <span class="font-black">Virtual Scanner</span>
+          </div>
+          <p class="mt-4 max-w-md text-sm leading-6 text-slate-300">
+            Open-source Windows TWAIN virtual scanner for importing image and PDF files
+            as scanned pages in applications that still expect a scanner source.
+          </p>
+          <p class="mt-4 text-xs leading-5 text-slate-400">
+            TWAIN is a third-party standard. This project is not affiliated with or endorsed by
+            the TWAIN Working Group, Microsoft, or GitHub.
+          </p>
+        </div>
+        <div>
+          <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Project</h3>
+          <div class="mt-4 grid gap-3 text-sm text-slate-300">
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner">Source repository</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">Latest release</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml">Build workflow</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/issues">Issues and requests</a>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Details</h3>
+          <div class="mt-4 grid gap-3 text-sm text-slate-300">
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE">MIT License</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md">Privacy Policy</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md">Security Policy</a>
+            <button type="button" class="footer-link text-left" data-modal>Code signing status</button>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white/10">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <p>Copyright &copy; 2026 Reuben Miller. Released under the MIT License.</p>
+          <p>Built from public source with GitHub Actions.</p>
         </div>
       </div>
     </footer>
@@ -315,6 +393,7 @@
       const toast = document.querySelector("#toast");
       const modal = document.querySelector("#modal");
       const downloadButtons = document.querySelectorAll("[data-download]");
+      const actionButtons = document.querySelectorAll("[data-action-button]");
       const modalButtons = document.querySelectorAll("[data-modal]");
       const closeModalButtons = document.querySelectorAll("[data-close-modal]");
 
@@ -336,6 +415,17 @@
         modal.classList.add("hidden");
         modal.classList.remove("flex");
         modal.setAttribute("aria-hidden", "true");
+      }
+
+      function pulseButton(button, callback) {
+        if (button.dataset.busy === "true") return;
+        button.dataset.busy = "true";
+        button.classList.add("is-busy");
+        window.setTimeout(() => {
+          button.dataset.busy = "false";
+          button.classList.remove("is-busy");
+          callback();
+        }, 420);
       }
 
       function startDownload(button) {
@@ -372,8 +462,11 @@
         button.addEventListener("click", () => startDownload(button));
       });
 
-      modalButtons.forEach((button) => button.addEventListener("click", openModal));
-      closeModalButtons.forEach((button) => button.addEventListener("click", closeModal));
+      modalButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, openModal)));
+      actionButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, closeModal)));
+      closeModalButtons.forEach((button) => {
+        if (!button.dataset.actionButton) button.addEventListener("click", closeModal);
+      });
       modal.addEventListener("click", (event) => {
         if (event.target === modal) closeModal();
       });
