@@ -64,6 +64,16 @@ jobs:
             virtual-scanner-builder \
             bash scripts/build-installer.sh
 
+      - name: Generate checksums
+        run: |
+          set -euo pipefail
+          cd dist
+          sha256sum \
+            VirtualScanner-*.exe \
+            VirtualScanner-*.zip \
+            */VirtualScanner.ds \
+            > SHA256SUMS.txt
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -72,6 +82,7 @@ jobs:
             dist/VirtualScanner-*.exe
             dist/VirtualScanner-*.zip
             dist/*/VirtualScanner.ds
+            dist/SHA256SUMS.txt
           if-no-files-found: error
 
       - name: Create GitHub release
@@ -81,8 +92,15 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
-          gh release create "${GITHUB_REF_NAME}" \
-            dist/VirtualScanner-${VERSION}-*-setup.exe \
-            dist/VirtualScanner-${VERSION}-*.zip \
-            --title "Virtual Scanner ${VERSION}" \
-            --notes "Built from GitHub Actions for ${GITHUB_SHA}."
+          release_assets=(
+            dist/VirtualScanner-${VERSION}-*-setup.exe
+            dist/VirtualScanner-${VERSION}-*.zip
+            dist/SHA256SUMS.txt
+          )
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" "${release_assets[@]}" --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" "${release_assets[@]}" \
+              --title "Virtual Scanner ${VERSION}" \
+              --notes "Built from GitHub Actions for ${GITHUB_SHA}."
+          fi

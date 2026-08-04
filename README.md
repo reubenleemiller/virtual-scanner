@@ -1,5 +1,8 @@
 # Virtual TWAIN Scanner for Windows 11 ARM64
 
+[![Build](https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml/badge.svg)](https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 This project builds a small virtual TWAIN data source without Visual Studio.
 It is aimed at a Windows 11 ARM64 VM running in UTM.
 
@@ -98,6 +101,15 @@ git push origin v1.5.2
 The tag build creates a GitHub Release and attaches the generated installers and
 ZIP files. If repository secrets `SIGN_CERT_BASE64` and `SIGN_CERT_PASSWORD` are
 configured, CI signs the `.ds` files and installer executables during the build.
+CI also publishes `SHA256SUMS.txt` so users and reviewers can verify downloads.
+
+## Code signing status
+
+Windows release artifacts are built by GitHub Actions from the public source
+repository. Unsigned builds may trigger Microsoft Defender SmartScreen or
+unknown-publisher warnings until the project is accepted for open-source code
+signing. Once signing is configured, CI will sign release artifacts during the
+same reproducible build process.
 
 ## Build with Google Cloud Build
 
