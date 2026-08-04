@@ -1,5 +1,5 @@
 !ifndef VERSION
-!define VERSION "1.5.1"
+!define VERSION "1.5.2"
 !endif
 !ifndef SOURCE_DIR
 !define SOURCE_DIR "."
@@ -13,7 +13,7 @@
 !include x64.nsh
 
 !define APP_NAME "Virtual Scanner"
-!define COMPANY_NAME "Codex"
+!define COMPANY_NAME "Reuben Miller"
 !define STARTMENU_FOLDER "Virtual Scanner"
 !if "${ARCH}" == "x86"
 !define TWAIN_FOLDER "twain_32"
@@ -38,6 +38,8 @@ VIAddVersionKey "ProductName" "${APP_NAME}"
 VIAddVersionKey "CompanyName" "${COMPANY_NAME}"
 VIAddVersionKey "FileDescription" "${APP_NAME} ${ARCH} Installer"
 VIAddVersionKey "FileVersion" "${VERSION}"
+VIAddVersionKey "LegalCopyright" "Copyright (c) Reuben Miller"
+VIAddVersionKey "OriginalFilename" "VirtualScanner-${VERSION}-${ARCH}-setup.exe"
 VIAddVersionKey "ProductVersion" "${VERSION}"
 
 !define MUI_ICON "${SOURCE_DIR}/app/VirtualScanner.ico"

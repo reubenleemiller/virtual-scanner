@@ -3,6 +3,11 @@
 This project builds a small virtual TWAIN data source without Visual Studio.
 It is aimed at a Windows 11 ARM64 VM running in UTM.
 
+## License
+
+Virtual Scanner is open source under the MIT License. See `LICENSE` for the
+full license text and `NOTICE` for project notices.
+
 ## Important architecture note
 
 TWAIN data sources are loaded into the scanner application process, so the
@@ -75,6 +80,24 @@ Expected behavior:
 
 For ExamView on Windows 11 ARM64, the `x86` installer is usually the right one
 because ExamView is normally a 32-bit application.
+
+## Build and release from CI
+
+Release artifacts should be built by GitHub Actions, not manually. The workflow
+in `.github/workflows/build.yml` builds the Windows data sources, NSIS
+installers, and portable ZIPs inside the Docker build environment.
+
+Every push to `main` and every pull request runs the CI build and uploads the
+generated files as workflow artifacts. To publish a release, push a version tag:
+
+```sh
+git tag v1.5.2
+git push origin v1.5.2
+```
+
+The tag build creates a GitHub Release and attaches the generated installers and
+ZIP files. If repository secrets `SIGN_CERT_BASE64` and `SIGN_CERT_PASSWORD` are
+configured, CI signs the `.ds` files and installer executables during the build.
 
 ## Build with Google Cloud Build
 
@@ -215,11 +238,32 @@ Run this from the project folder on your Mac:
 ```sh
 cd "$HOME/Documents/virtual-scanner"
 
-VERSION="1.5.1"
+VERSION="1.5.2"
 gcloud builds submit . \
   --config cloudbuild.yaml \
   --substitutions "_ARTIFACT_BUCKET=${BUCKET},_VERSION=${VERSION}"
 ```
+
+To build signed Windows installers, provide an Authenticode code-signing
+certificate before running the build. The certificate subject is what Windows
+shows as the verified publisher, so use a certificate issued to `Reuben Miller`.
+
+```sh
+export SIGN_CERT_PATH="$HOME/certs/reuben-miller-code-signing.pfx"
+export SIGN_CERT_PASSWORD="CERTIFICATE_PASSWORD"
+export SIGN_NAME="Reuben Miller"
+export SIGN_DESCRIPTION="Virtual Scanner"
+
+VERSION="1.5.2" scripts/build-installer.sh
+```
+
+CI builds can set `SIGN_CERT_BASE64` instead of `SIGN_CERT_PATH`; the build
+decodes it into a temporary `.pfx` file and removes it when signing finishes.
+The build signs each `VirtualScanner.ds` data source and each
+`VirtualScanner-*-setup.exe` installer when `SIGN_CERT_PATH` or
+`SIGN_CERT_BASE64` is set. Code signing removes the unknown-publisher signature
+problem, but Microsoft SmartScreen can still warn on a brand-new certificate
+until the signed app builds enough reputation.
 
 When the build succeeds, the output ends with a table like this:
 
@@ -257,7 +301,7 @@ gcloud storage cp \
 Copy this file into the Windows 11 ARM64 VM and run it as Administrator:
 
 ```text
-VirtualScanner-1.5.1-x86-setup.exe
+VirtualScanner-1.5.2-x86-setup.exe
 ```
 
 Use `x86` if ExamView is installed under `C:\Program Files (x86)`. Use `x64`
@@ -267,12 +311,12 @@ TWAIN app.
 Other generated files are also available:
 
 ```text
-VirtualScanner-1.5.1-arm64-setup.exe
-VirtualScanner-1.5.1-x64-setup.exe
-VirtualScanner-1.5.1-x86-setup.exe
-VirtualScanner-1.5.1-arm64-portable.zip
-VirtualScanner-1.5.1-x64-portable.zip
-VirtualScanner-1.5.1-x86-portable.zip
+VirtualScanner-1.5.2-arm64-setup.exe
+VirtualScanner-1.5.2-x64-setup.exe
+VirtualScanner-1.5.2-x86-setup.exe
+VirtualScanner-1.5.2-arm64-portable.zip
+VirtualScanner-1.5.2-x64-portable.zip
+VirtualScanner-1.5.2-x86-portable.zip
 ```
 
 The portable ZIP avoids the installer executable. Extract it in the VM, open

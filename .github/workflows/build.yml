@@ -1,0 +1,88 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build, for example 1.5.2"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  windows-installers:
+    name: Windows installers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" == v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          elif [[ -n "${{ inputs.version || '' }}" ]]; then
+            version="${{ inputs.version }}"
+          else
+            version="1.5.2"
+          fi
+          echo "version=${version}" >>"${GITHUB_OUTPUT}"
+
+      - name: Build container
+        run: docker build -t virtual-scanner-builder -f ci/Dockerfile .
+
+      - name: Build artifacts
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          SIGN_CERT_BASE64: ${{ secrets.SIGN_CERT_BASE64 }}
+          SIGN_CERT_PASSWORD: ${{ secrets.SIGN_CERT_PASSWORD }}
+          SIGN_NAME: Reuben Miller
+          SIGN_DESCRIPTION: Virtual Scanner
+          SIGN_URL: https://github.com/reubenleemiller/virtual-scanner
+        run: |
+          set -euo pipefail
+          docker run --rm \
+            -e VERSION \
+            -e SIGN_CERT_BASE64 \
+            -e SIGN_CERT_PASSWORD \
+            -e SIGN_NAME \
+            -e SIGN_DESCRIPTION \
+            -e SIGN_URL \
+            -v "${PWD}:/workspace" \
+            virtual-scanner-builder \
+            bash scripts/build-installer.sh
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: virtual-scanner-${{ steps.version.outputs.version }}
+          path: |
+            dist/VirtualScanner-*.exe
+            dist/VirtualScanner-*.zip
+            dist/*/VirtualScanner.ds
+          if-no-files-found: error
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -euo pipefail
+          gh release create "${GITHUB_REF_NAME}" \
+            dist/VirtualScanner-${VERSION}-*-setup.exe \
+            dist/VirtualScanner-${VERSION}-*.zip \
+            --title "Virtual Scanner ${VERSION}" \
+            --notes "Built from GitHub Actions for ${GITHUB_SHA}."

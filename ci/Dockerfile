@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         make \
         nsis \
+        osslsigncode \
         zip \
     && rm -rf /var/lib/apt/lists/*
 

@@ -1,0 +1,12 @@
+Virtual Scanner
+Copyright (c) 2026 Reuben Miller
+
+Virtual Scanner is licensed under the MIT License. See LICENSE for the full
+license text.
+
+Unless noted otherwise in this repository, the source code, installer scripts,
+documentation, and bundled project assets are provided under the MIT License.
+
+This project implements a TWAIN-compatible virtual scanner data source. TWAIN is
+a third-party standard; this repository does not grant rights to any third-party
+trademarks.
