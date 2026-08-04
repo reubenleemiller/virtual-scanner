@@ -46,23 +46,22 @@
 }
 
 .mini-spinner {
+  display: none;
   height: .85rem;
   width: .85rem;
   flex: 0 0 auto;
   border-radius: 999px;
   border: 2px solid rgba(14, 157, 217, .25);
   border-top-color: #0e9dd9;
-  opacity: .95;
-}
-
-.primary-button:hover .mini-spinner,
-.secondary-button:hover .mini-spinner {
-  animation: spin .8s linear infinite;
+  opacity: 0;
+  transition: opacity .16s ease;
 }
 
 .primary-button.is-busy .mini-spinner,
 .secondary-button.is-busy .mini-spinner {
+  display: inline-block;
   animation: spin .8s linear infinite;
+  opacity: .95;
 }
 
 .primary-button.is-busy .button-label,
@@ -82,7 +81,7 @@
 }
 
 .progress-ring {
-  display: inline-flex;
+  display: none;
   height: 2.25rem;
   width: 2.25rem;
   flex: 0 0 auto;
@@ -111,6 +110,7 @@
 }
 
 .download-button.is-busy .progress-ring {
+  display: inline-flex;
   animation: spin .9s linear infinite;
 }
 

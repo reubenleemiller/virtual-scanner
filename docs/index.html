@@ -122,7 +122,7 @@
         <div class="flex items-start justify-between gap-5">
           <div>
             <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Code signing</p>
-            <h2 class="mt-2 text-2xl font-bold text-ink">About Windows warnings</h2>
+            <h2 id="modal-title" class="mt-2 text-2xl font-bold text-ink">About Windows warnings</h2>
           </div>
           <button
             type="button"
@@ -133,7 +133,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <p class="mt-4 text-sm leading-6 text-slate-650">
+        <p id="modal-body" class="mt-4 text-sm leading-6 text-slate-650">
           Virtual Scanner release files are built by GitHub Actions from the public source repository.
           Builds may still show SmartScreen or unknown-publisher prompts until open-source code signing
           is approved and wired into the release workflow.
@@ -143,7 +143,7 @@
             <span class="mini-spinner" aria-hidden="true"></span>
             <span class="button-label">View CI builds</span>
           </a>
-          <button type="button" class="primary-button" data-close-modal data-action-button>
+          <button type="button" class="primary-button" data-close-modal data-action-button="true">
             <span class="mini-spinner" aria-hidden="true"></span>
             <span class="button-label">Got it</span>
           </button>
@@ -165,7 +165,14 @@
         <a class="transition hover:text-reef" href="#how-it-works">How it works</a>
         <a class="transition hover:text-reef" href="https://github.com/reubenleemiller/virtual-scanner">GitHub</a>
       </nav>
-      <button type="button" class="secondary-button !px-3 sm:!px-4" data-modal>
+      <button
+        type="button"
+        class="secondary-button !px-3 sm:!px-4"
+        data-modal
+        data-modal-eyebrow="Code signing"
+        data-modal-title="About Windows warnings"
+        data-modal-body="Virtual Scanner release files are built by GitHub Actions from the public source repository. Builds may still show SmartScreen or unknown-publisher prompts until open-source code signing is approved and wired into the release workflow."
+      >
         <span class="mini-spinner" aria-hidden="true"></span>
         <span class="button-label">Signing</span>
       </button>
@@ -242,10 +249,23 @@
               <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Downloads</p>
               <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Choose your Windows build</h2>
             </div>
-            <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">
+            <div class="flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                class="secondary-button"
+                data-modal
+                data-modal-eyebrow="Download flow"
+                data-modal-title="What happens when you click download"
+                data-modal-body="Download buttons show a short local progress animation from 0 to 100 percent before handing the browser to the GitHub Release file. The animation does not collect data or proxy the file; the actual download comes directly from GitHub."
+              >
+                <span class="mini-spinner" aria-hidden="true"></span>
+                <span class="button-label">How downloads work</span>
+              </button>
+              <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">
               <span class="mini-spinner" aria-hidden="true"></span>
               <span class="button-label">Release notes</span>
-            </a>
+              </a>
+            </div>
           </div>
 
           <div class="mt-8 grid gap-4 lg:grid-cols-3">
@@ -377,7 +397,26 @@
             <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE">MIT License</a>
             <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md">Privacy Policy</a>
             <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md">Security Policy</a>
-            <button type="button" class="footer-link text-left" data-modal>Code signing status</button>
+            <button
+              type="button"
+              class="footer-link text-left"
+              data-modal
+              data-modal-eyebrow="Code signing"
+              data-modal-title="Code signing status"
+              data-modal-body="The project is prepared for open-source code signing. Until signing is approved and configured, Windows may identify release files as unsigned even though the artifacts are built from the public GitHub Actions workflow."
+            >
+              Code signing status
+            </button>
+            <button
+              type="button"
+              class="footer-link text-left"
+              data-modal
+              data-modal-eyebrow="Privacy"
+              data-modal-title="Local-first privacy"
+              data-modal-body="Virtual Scanner runs locally. Selected image and PDF files stay on the user's Windows computer unless the user separately shares them through another application. The project does not collect, transmit, sell, or share personal data."
+            >
+              Privacy summary
+            </button>
           </div>
         </div>
       </div>
@@ -392,6 +431,9 @@
     <script>
       const toast = document.querySelector("#toast");
       const modal = document.querySelector("#modal");
+      const modalEyebrow = modal.querySelector("p");
+      const modalTitle = document.querySelector("#modal-title");
+      const modalBody = document.querySelector("#modal-body");
       const downloadButtons = document.querySelectorAll("[data-download]");
       const actionButtons = document.querySelectorAll("[data-action-button]");
       const modalButtons = document.querySelectorAll("[data-modal]");
@@ -405,7 +447,10 @@
         window.setTimeout(() => toast.classList.add("hidden"), 3600);
       }
 
-      function openModal() {
+      function openModal(source) {
+        if (source?.dataset.modalEyebrow) modalEyebrow.textContent = source.dataset.modalEyebrow;
+        if (source?.dataset.modalTitle) modalTitle.textContent = source.dataset.modalTitle;
+        if (source?.dataset.modalBody) modalBody.textContent = source.dataset.modalBody;
         modal.classList.remove("hidden");
         modal.classList.add("flex");
         modal.setAttribute("aria-hidden", "false");
@@ -439,6 +484,8 @@
         const label = button.dataset.label || "file";
         let progress = 0;
 
+        ring.style.setProperty("--progress", 0);
+        text.textContent = "0%";
         showToast(`Preparing ${label} download...`);
 
         const timer = window.setInterval(() => {
@@ -462,7 +509,15 @@
         button.addEventListener("click", () => startDownload(button));
       });
 
-      modalButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, openModal)));
+      modalButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          if (button.classList.contains("secondary-button")) {
+            pulseButton(button, () => openModal(button));
+          } else {
+            openModal(button);
+          }
+        });
+      });
       actionButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, closeModal)));
       closeModalButtons.forEach((button) => {
         if (!button.dataset.actionButton) button.addEventListener("click", closeModal);
