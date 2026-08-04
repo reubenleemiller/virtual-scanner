@@ -11,10 +11,16 @@
     <meta property="og:title" content="Virtual Scanner" />
     <meta
       property="og:description"
-      content="A CI-built open-source TWAIN virtual scanner for Windows."
+      content="A public-source TWAIN virtual scanner for Windows."
     />
     <meta property="og:type" content="website" />
     <link rel="icon" href="./assets/virtual-scanner-icon.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="./styles.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -121,8 +127,8 @@
       <div class="glass w-full max-w-lg rounded-lg p-6 shadow-2xl">
         <div class="flex items-start justify-between gap-5">
           <div>
-            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Code signing</p>
-            <h2 id="modal-title" class="mt-2 text-2xl font-bold text-ink">About Windows warnings</h2>
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Virtual Scanner</p>
+            <h2 id="modal-title" class="mt-2 text-2xl font-bold text-ink">What Virtual Scanner does</h2>
           </div>
           <button
             type="button"
@@ -134,17 +140,19 @@
           </button>
         </div>
         <p id="modal-body" class="mt-4 text-sm leading-6 text-slate-650">
-          Virtual Scanner release files are built by GitHub Actions from the public source repository.
-          Builds may still show SmartScreen or unknown-publisher prompts until open-source code signing
-          is approved and wired into the release workflow.
+          Virtual Scanner is a local Windows TWAIN data source. It appears as a scanner
+          inside compatible desktop applications, then turns files from a local inbox into
+          pages that the application receives through its normal scan workflow.
         </p>
         <div class="mt-6 flex flex-wrap gap-3">
           <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml">
             <span class="mini-spinner" aria-hidden="true"></span>
-            <span class="button-label">View CI builds</span>
+            <i class="fa-solid fa-diagram-project button-icon" aria-hidden="true"></i>
+            <span class="button-label">View builds</span>
           </a>
           <button type="button" class="primary-button" data-close-modal data-action-button="true">
             <span class="mini-spinner" aria-hidden="true"></span>
+            <i class="fa-solid fa-check button-icon" aria-hidden="true"></i>
             <span class="button-label">Got it</span>
           </button>
         </div>
@@ -169,12 +177,13 @@
         type="button"
         class="secondary-button !px-3 sm:!px-4"
         data-modal
-        data-modal-eyebrow="Code signing"
-        data-modal-title="About Windows warnings"
-        data-modal-body="Virtual Scanner release files are built by GitHub Actions from the public source repository. Builds may still show SmartScreen or unknown-publisher prompts until open-source code signing is approved and wired into the release workflow."
+        data-modal-eyebrow="Virtual Scanner"
+        data-modal-title="What Virtual Scanner does"
+        data-modal-body="Virtual Scanner is a local Windows TWAIN data source. It appears as a scanner inside compatible desktop applications, then turns files from a local inbox into pages that the application receives through its normal scan workflow."
       >
         <span class="mini-spinner" aria-hidden="true"></span>
-        <span class="button-label">Signing</span>
+        <i class="fa-solid fa-circle-info button-icon" aria-hidden="true"></i>
+        <span class="button-label">What is it?</span>
       </button>
     </header>
 
@@ -183,7 +192,7 @@
         <div>
           <div class="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-white/70 px-3 py-2 text-xs font-bold uppercase tracking-[.2em] text-reef shadow-sm">
             <span class="h-2 w-2 rounded-full bg-mint"></span>
-            CI-built Windows releases
+            Public Windows releases
           </div>
           <h1 class="mt-7 max-w-3xl text-5xl font-black leading-[1.02] tracking-normal text-ink sm:text-6xl lg:text-7xl">
             A virtual TWAIN scanner for the files you already have.
@@ -201,10 +210,12 @@
               data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe"
             >
               <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+              <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
               <span class="button-label">Download x86 installer</span>
             </button>
             <a class="secondary-button" href="#downloads">
               <span class="mini-spinner" aria-hidden="true"></span>
+              <i class="fa-solid fa-box-open button-icon" aria-hidden="true"></i>
               <span class="button-label">More builds</span>
             </a>
           </div>
@@ -242,6 +253,48 @@
         </div>
       </section>
 
+      <section class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <div class="grid gap-6 lg:grid-cols-[.9fr_1.1fr] lg:items-start">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">What it is</p>
+            <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">A software scanner source, not a cloud upload tool.</h2>
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              Virtual Scanner installs a TWAIN data source on Windows. When a desktop application asks
+              Windows for available scanner sources, Virtual Scanner appears in that list. Instead of
+              talking to scanner hardware, it reads files from a local inbox and presents them to the
+              requesting application as scanned pages.
+            </p>
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              It is useful when an older application has a scan button but no clean import-file path,
+              or when a workflow expects the same interaction pattern as a flatbed scanner even though
+              the document already exists as a PNG, JPG, TIFF, or PDF.
+            </p>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <div class="feature-panel">
+              <i class="fa-solid fa-file-image feature-icon" aria-hidden="true"></i>
+              <h3>File-backed scans</h3>
+              <p>Queue existing image and document files, then deliver them through the scan workflow.</p>
+            </div>
+            <div class="feature-panel">
+              <i class="fa-brands fa-windows feature-icon" aria-hidden="true"></i>
+              <h3>Windows TWAIN source</h3>
+              <p>Installs into the Windows TWAIN source folders for compatible desktop applications.</p>
+            </div>
+            <div class="feature-panel">
+              <i class="fa-solid fa-folder-open feature-icon" aria-hidden="true"></i>
+              <h3>Local inbox</h3>
+              <p>Files stay in a local inbox folder and are moved after transfer, keeping the flow predictable.</p>
+            </div>
+            <div class="feature-panel">
+              <i class="fa-solid fa-lock feature-icon" aria-hidden="true"></i>
+              <h3>No account required</h3>
+              <p>The scanner source runs locally and does not require a hosted service or user account.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="downloads" class="border-y border-sky-100 bg-white/70 py-16">
         <div class="mx-auto max-w-7xl px-5 sm:px-8">
           <div class="flex flex-col justify-between gap-5 md:flex-row md:items-end">
@@ -250,19 +303,9 @@
               <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Choose your Windows build</h2>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                class="secondary-button"
-                data-modal
-                data-modal-eyebrow="Download flow"
-                data-modal-title="What happens when you click download"
-                data-modal-body="Download buttons show a short local progress animation from 0 to 100 percent before handing the browser to the GitHub Release file. The animation does not collect data or proxy the file; the actual download comes directly from GitHub."
-              >
-                <span class="mini-spinner" aria-hidden="true"></span>
-                <span class="button-label">How downloads work</span>
-              </button>
               <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">
               <span class="mini-spinner" aria-hidden="true"></span>
+              <i class="fa-brands fa-github button-icon" aria-hidden="true"></i>
               <span class="button-label">Release notes</span>
               </a>
             </div>
@@ -271,28 +314,34 @@
           <div class="mt-8 grid gap-4 lg:grid-cols-3">
             <article class="download-card">
               <span class="badge">Most legacy apps</span>
+              <i class="fa-solid fa-microchip download-icon" aria-hidden="true"></i>
               <h3>x86 installer</h3>
               <p>For 32-bit TWAIN applications on Windows, including many older desktop workflows.</p>
               <button type="button" class="download-button w-full" data-download data-label="x86 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
                 <span class="button-label">Download x86</span>
               </button>
             </article>
             <article class="download-card">
               <span class="badge">64-bit apps</span>
+              <i class="fa-solid fa-desktop download-icon" aria-hidden="true"></i>
               <h3>x64 installer</h3>
               <p>For 64-bit Intel TWAIN applications running on Windows x64 or emulated ARM64.</p>
               <button type="button" class="download-button w-full" data-download data-label="x64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x64-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
                 <span class="button-label">Download x64</span>
               </button>
             </article>
             <article class="download-card">
               <span class="badge">Native ARM64</span>
+              <i class="fa-solid fa-bolt download-icon" aria-hidden="true"></i>
               <h3>ARM64 installer</h3>
               <p>For native ARM64 TWAIN applications with a native ARM64 TWAIN DSM.</p>
               <button type="button" class="download-button w-full" data-download data-label="ARM64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-arm64-setup.exe">
                 <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
                 <span class="button-label">Download ARM64</span>
               </button>
             </article>
@@ -312,19 +361,44 @@
         </div>
         <div class="grid gap-5 md:grid-cols-3">
           <div class="info-tile">
-            <span>01</span>
+            <span><i class="fa-solid fa-screwdriver-wrench" aria-hidden="true"></i> 01</span>
             <h3>Install the matching build</h3>
             <p>Pick the installer that matches the TWAIN application architecture.</p>
           </div>
           <div class="info-tile">
-            <span>02</span>
+            <span><i class="fa-solid fa-folder-plus" aria-hidden="true"></i> 02</span>
             <h3>Add files to the inbox</h3>
             <p>Queue local PNG, JPG, TIFF, or PDF files using the inbox helper.</p>
           </div>
           <div class="info-tile">
-            <span>03</span>
+            <span><i class="fa-solid fa-print" aria-hidden="true"></i> 03</span>
             <h3>Scan from your app</h3>
             <p>Your TWAIN application receives the queued files as scanned pages.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <div class="grid gap-5 lg:grid-cols-4">
+          <div class="lg:col-span-2">
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Under the hood</p>
+            <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">How the handoff works</h2>
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              A TWAIN application talks to a data source through the TWAIN Data Source Manager.
+              Virtual Scanner implements that data-source side of the conversation. When a scan begins,
+              it finds the next supported file in the inbox, decodes it, and transfers the page data back
+              through the TWAIN calls the application already understands.
+            </p>
+          </div>
+          <div class="info-tile">
+            <span><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Source</span>
+            <h3>Architecture matters</h3>
+            <p>The installed data source must match the bitness of the application that loads it.</p>
+          </div>
+          <div class="info-tile">
+            <span><i class="fa-solid fa-file-pdf" aria-hidden="true"></i> PDFs</span>
+            <h3>PDF support</h3>
+            <p>PDF files can be scanned when Ghostscript is available for local conversion.</p>
           </div>
         </div>
       </section>
@@ -342,22 +416,22 @@
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
             <div class="info-tile">
-              <span>MIT</span>
+              <span><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT</span>
               <h3>Permissive license</h3>
               <p>Use, study, modify, and redistribute the project under the MIT License.</p>
             </div>
             <div class="info-tile">
-              <span>CI</span>
+              <span><i class="fa-solid fa-gears" aria-hidden="true"></i> Builds</span>
               <h3>Automated builds</h3>
               <p>Windows installers and portable packages are produced by GitHub Actions.</p>
             </div>
             <div class="info-tile">
-              <span>Local</span>
+              <span><i class="fa-solid fa-house-laptop" aria-hidden="true"></i> Local</span>
               <h3>No data collection</h3>
               <p>Selected files stay on the user's Windows computer unless shared separately.</p>
             </div>
             <div class="info-tile">
-              <span>TWAIN</span>
+              <span><i class="fa-solid fa-plug" aria-hidden="true"></i> TWAIN</span>
               <h3>Legacy compatible</h3>
               <p>Designed for TWAIN-compatible apps that need a scanner-style source.</p>
             </div>
@@ -385,27 +459,28 @@
         <div>
           <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Project</h3>
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner">Source repository</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">Latest release</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml">Build workflow</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/issues">Issues and requests</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner"><i class="fa-brands fa-github" aria-hidden="true"></i> Source repository</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2"><i class="fa-solid fa-box-archive" aria-hidden="true"></i> Latest release</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Build workflow</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/issues"><i class="fa-solid fa-comments" aria-hidden="true"></i> Issues and requests</a>
           </div>
         </div>
         <div>
           <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Details</h3>
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE">MIT License</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md">Privacy Policy</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md">Security Policy</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT License</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md"><i class="fa-solid fa-user-shield" aria-hidden="true"></i> Privacy Policy</a>
+            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md"><i class="fa-solid fa-lock" aria-hidden="true"></i> Security Policy</a>
             <button
               type="button"
               class="footer-link text-left"
               data-modal
-              data-modal-eyebrow="Code signing"
-              data-modal-title="Code signing status"
-              data-modal-body="The project is prepared for open-source code signing. Until signing is approved and configured, Windows may identify release files as unsigned even though the artifacts are built from the public GitHub Actions workflow."
+              data-modal-eyebrow="Supported files"
+              data-modal-title="Files Virtual Scanner can use"
+              data-modal-body="Virtual Scanner is built for local image and document workflows. Add PNG, JPG, TIFF, or PDF files to the inbox helper, choose Virtual Scanner in a TWAIN-compatible app, and the queued file is transferred as one or more scanned pages."
             >
-              Code signing status
+              <i class="fa-solid fa-file-import" aria-hidden="true"></i>
+              Supported files
             </button>
             <button
               type="button"
@@ -415,6 +490,7 @@
               data-modal-title="Local-first privacy"
               data-modal-body="Virtual Scanner runs locally. Selected image and PDF files stay on the user's Windows computer unless the user separately shares them through another application. The project does not collect, transmit, sell, or share personal data."
             >
+              <i class="fa-solid fa-house-laptop" aria-hidden="true"></i>
               Privacy summary
             </button>
           </div>
@@ -470,7 +546,7 @@
           button.dataset.busy = "false";
           button.classList.remove("is-busy");
           callback();
-        }, 420);
+        }, 850);
       }
 
       function startDownload(button) {

@@ -1,6 +1,7 @@
 .primary-button,
 .secondary-button,
 .download-button {
+  position: relative;
   display: inline-flex;
   min-height: 3rem;
   align-items: center;
@@ -46,30 +47,43 @@
 }
 
 .mini-spinner {
-  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-block;
   height: .85rem;
   width: .85rem;
   flex: 0 0 auto;
+  margin-left: -.425rem;
+  margin-top: -.425rem;
   border-radius: 999px;
   border: 2px solid rgba(14, 157, 217, .25);
   border-top-color: #0e9dd9;
   opacity: 0;
+  visibility: hidden;
   transition: opacity .16s ease;
 }
 
 .primary-button.is-busy .mini-spinner,
 .secondary-button.is-busy .mini-spinner {
-  display: inline-block;
   animation: spin .8s linear infinite;
   opacity: .95;
+  visibility: visible;
+}
+
+.primary-button.is-busy .button-icon,
+.secondary-button.is-busy .button-icon,
+.download-button.is-busy .button-icon {
+  opacity: 0;
+  visibility: hidden;
 }
 
 .primary-button.is-busy .button-label,
 .secondary-button.is-busy .button-label,
 .download-button.is-busy .button-label {
-  max-width: 0;
   opacity: 0;
   transform: scale(.92);
+  visibility: hidden;
 }
 
 .button-label {
@@ -80,16 +94,29 @@
   transition: max-width .18s ease, opacity .16s ease, transform .16s ease;
 }
 
+.button-icon {
+  flex: 0 0 auto;
+  transition: opacity .16s ease, visibility .16s ease;
+}
+
 .progress-ring {
-  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-flex;
   height: 2.25rem;
   width: 2.25rem;
   flex: 0 0 auto;
+  margin-left: -1.125rem;
+  margin-top: -1.125rem;
   align-items: center;
   justify-content: center;
   border-radius: 999px;
   padding: 3px;
   color: white;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .16s ease;
 }
 
 .progress-ring::before {
@@ -110,8 +137,8 @@
 }
 
 .download-button.is-busy .progress-ring {
-  display: inline-flex;
-  animation: spin .9s linear infinite;
+  opacity: 1;
+  visibility: visible;
 }
 
 .download-card,
@@ -133,6 +160,19 @@
 .download-card h3 {
   font-size: 1.45rem;
   font-weight: 900;
+}
+
+.download-icon,
+.feature-icon {
+  display: inline-flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: .5rem;
+  background: rgba(14, 157, 217, .1);
+  color: #0e9dd9;
+  font-size: 1.05rem;
 }
 
 .download-card p,
@@ -174,7 +214,30 @@
   font-weight: 900;
 }
 
+.feature-panel {
+  border: 1px solid rgba(125, 163, 190, .25);
+  border-radius: .5rem;
+  background: rgba(255, 255, 255, .84);
+  padding: 1.3rem;
+  box-shadow: 0 18px 52px rgba(18, 32, 51, .08);
+}
+
+.feature-panel h3 {
+  margin-top: 1rem;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.feature-panel p {
+  margin-top: .45rem;
+  color: #526277;
+  line-height: 1.65;
+}
+
 .footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
   width: fit-content;
   transition: color .18s ease, transform .18s ease;
 }
