@@ -103,6 +103,21 @@ ZIP files. If repository secrets `SIGN_CERT_BASE64` and `SIGN_CERT_PASSWORD` are
 configured, CI signs the `.ds` files and installer executables during the build.
 CI also publishes `SHA256SUMS.txt` so users and reviewers can verify downloads.
 
+## Contact form API
+
+The GitHub Pages site can submit its contact form to a Vercel Serverless
+Function at `api/contact.mjs`. Configure these Vercel environment variables:
+
+```text
+RESEND_API_KEY
+RESEND_FROM_EMAIL
+CONTACT_TO_EMAIL
+CONTACT_ALLOWED_ORIGIN=https://reubenleemiller.github.io
+```
+
+After deploying the Vercel endpoint, set
+`docs/contact-config.js` to the deployed `/api/contact` URL.
+
 ## Code signing status
 
 Windows release artifacts are built by GitHub Actions from the public source

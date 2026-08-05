@@ -22,6 +22,7 @@
       referrerpolicy="no-referrer"
     />
     <link rel="stylesheet" href="./styles.css" />
+    <script src="./contact-config.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -121,10 +122,13 @@
 
     <div
       id="modal"
-      class="fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/50 p-4"
+      class="app-modal fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/50 p-4"
       aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
     >
-      <div class="glass w-full max-w-lg rounded-lg p-6 shadow-2xl">
+      <div class="modal-panel glass w-full max-w-3xl rounded-lg p-6 shadow-2xl">
         <div class="flex items-start justify-between gap-5">
           <div>
             <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Virtual Scanner</p>
@@ -144,11 +148,12 @@
           inside compatible desktop applications, then turns files from a local inbox into
           pages that the application receives through its normal scan workflow.
         </p>
+        <div id="modal-extra" class="mt-5"></div>
         <div class="mt-6 flex flex-wrap gap-3">
-          <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml">
+          <a id="modal-open-link" class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner" target="_blank" rel="noopener">
             <span class="mini-spinner" aria-hidden="true"></span>
-            <i class="fa-solid fa-diagram-project button-icon" aria-hidden="true"></i>
-            <span class="button-label">View builds</span>
+            <i class="fa-solid fa-arrow-up-right-from-square button-icon" aria-hidden="true"></i>
+            <span class="button-label">Open source</span>
           </a>
           <button type="button" class="primary-button" data-close-modal data-action-button="true">
             <span class="mini-spinner" aria-hidden="true"></span>
@@ -171,6 +176,7 @@
       <nav class="hidden items-center gap-6 text-sm font-semibold text-slate-700 sm:flex">
         <a class="transition hover:text-reef" href="#downloads">Downloads</a>
         <a class="transition hover:text-reef" href="#how-it-works">How it works</a>
+        <a class="transition hover:text-reef" href="#contact">Contact</a>
         <a class="transition hover:text-reef" href="https://github.com/reubenleemiller/virtual-scanner">GitHub</a>
       </nav>
       <button
@@ -217,6 +223,11 @@
               <span class="mini-spinner" aria-hidden="true"></span>
               <i class="fa-solid fa-box-open button-icon" aria-hidden="true"></i>
               <span class="button-label">More builds</span>
+            </a>
+            <a class="secondary-button" href="#contact">
+              <span class="mini-spinner" aria-hidden="true"></span>
+              <i class="fa-solid fa-envelope button-icon" aria-hidden="true"></i>
+              <span class="button-label">Contact</span>
             </a>
           </div>
           <p class="mt-4 text-sm text-slate-600">
@@ -438,6 +449,60 @@
           </div>
         </div>
       </section>
+
+      <section id="contact" class="mx-auto max-w-7xl px-5 py-16 sm:px-8">
+        <div class="grid gap-8 lg:grid-cols-[.85fr_1.15fr]">
+          <div>
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Contact</p>
+            <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Questions, bugs, or workflow ideas?</h2>
+            <p class="mt-4 text-base leading-7 text-slate-700">
+              Send a message about installation, TWAIN compatibility, supported files, or release builds.
+              The form validates before sending, blocks duplicate submissions, and shows a confirmation
+              when the Vercel API endpoint accepts the message.
+            </p>
+            <div class="mt-5 grid gap-3 text-sm text-slate-700">
+              <p><i class="fa-solid fa-shield-halved text-reef" aria-hidden="true"></i> Honeypot and server-side validation are included.</p>
+              <p><i class="fa-solid fa-reply text-reef" aria-hidden="true"></i> A confirmation email is sent after successful submission.</p>
+              <p><i class="fa-solid fa-lock text-reef" aria-hidden="true"></i> Resend API keys stay on Vercel, never in browser code.</p>
+            </div>
+          </div>
+
+          <form id="contact-form" class="contact-card" novalidate>
+            <div class="honeypot" aria-hidden="true">
+              <label for="website">Website</label>
+              <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <label class="field-group">
+                <span>Name</span>
+                <input name="name" type="text" autocomplete="name" required minlength="2" />
+                <small data-error-for="name"></small>
+              </label>
+              <label class="field-group">
+                <span>Email</span>
+                <input name="email" type="email" autocomplete="email" required />
+                <small data-error-for="email"></small>
+              </label>
+            </div>
+            <label class="field-group mt-4">
+              <span>Subject</span>
+              <input name="subject" type="text" required minlength="3" maxlength="160" />
+              <small data-error-for="subject"></small>
+            </label>
+            <label class="field-group mt-4">
+              <span>Message</span>
+              <textarea name="message" rows="6" required minlength="10" maxlength="5000"></textarea>
+              <small data-error-for="message"></small>
+            </label>
+            <div id="contact-status" class="contact-status mt-4" role="status" aria-live="polite"></div>
+            <button id="contact-submit" type="submit" class="primary-button mt-5 w-full">
+              <span class="mini-spinner" aria-hidden="true"></span>
+              <i class="fa-solid fa-paper-plane button-icon" aria-hidden="true"></i>
+              <span class="button-label">Send message</span>
+            </button>
+          </form>
+        </div>
+      </section>
     </main>
 
     <footer class="bg-ink text-white">
@@ -461,8 +526,10 @@
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
             <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner"><i class="fa-brands fa-github" aria-hidden="true"></i> Source repository</a>
             <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2"><i class="fa-solid fa-box-archive" aria-hidden="true"></i> Latest release</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/actions/workflows/build.yml"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Build workflow</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/issues"><i class="fa-solid fa-comments" aria-hidden="true"></i> Issues and requests</a>
+            <button type="button" class="footer-link text-left" data-github-modal="runs"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Build status</button>
+            <button type="button" class="footer-link text-left" data-github-modal="issues"><i class="fa-solid fa-comments" aria-hidden="true"></i> Recent issues</button>
+            <button type="button" class="footer-link text-left" data-github-modal="pulls"><i class="fa-solid fa-code-pull-request" aria-hidden="true"></i> Pull requests</button>
+            <button type="button" class="footer-link text-left" data-github-modal="commits"><i class="fa-solid fa-code-commit" aria-hidden="true"></i> Latest commits</button>
           </div>
         </div>
         <div>
@@ -505,15 +572,33 @@
     </footer>
 
     <script>
+      const REPO = "reubenleemiller/virtual-scanner";
+      const GITHUB_BASE = `https://api.github.com/repos/${REPO}`;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
       const toast = document.querySelector("#toast");
       const modal = document.querySelector("#modal");
+      const modalPanel = modal.querySelector(".modal-panel");
       const modalEyebrow = modal.querySelector("p");
       const modalTitle = document.querySelector("#modal-title");
       const modalBody = document.querySelector("#modal-body");
+      const modalExtra = document.querySelector("#modal-extra");
+      const modalOpenLink = document.querySelector("#modal-open-link");
       const downloadButtons = document.querySelectorAll("[data-download]");
       const actionButtons = document.querySelectorAll("[data-action-button]");
       const modalButtons = document.querySelectorAll("[data-modal]");
+      const githubButtons = document.querySelectorAll("[data-github-modal]");
       const closeModalButtons = document.querySelectorAll("[data-close-modal]");
+      const contactForm = document.querySelector("#contact-form");
+      const contactStatus = document.querySelector("#contact-status");
+      const contactSubmit = document.querySelector("#contact-submit");
+      let lastFocusedElement = null;
+
+      function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = value || "";
+        return div.innerHTML;
+      }
 
       function showToast(message) {
         toast.textContent = message;
@@ -523,19 +608,47 @@
         window.setTimeout(() => toast.classList.add("hidden"), 3600);
       }
 
+      function getFocusable(container) {
+        return [...container.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+          .filter((item) => item.offsetParent !== null);
+      }
+
+      function setModalContent({ eyebrow, title, body, extra = "", link = "https://github.com/reubenleemiller/virtual-scanner", linkLabel = "Open source" }) {
+        modalEyebrow.textContent = eyebrow;
+        modalTitle.textContent = title;
+        modalBody.textContent = body;
+        modalExtra.innerHTML = extra;
+        modalOpenLink.href = link;
+        modalOpenLink.querySelector(".button-label").textContent = linkLabel;
+      }
+
       function openModal(source) {
-        if (source?.dataset.modalEyebrow) modalEyebrow.textContent = source.dataset.modalEyebrow;
-        if (source?.dataset.modalTitle) modalTitle.textContent = source.dataset.modalTitle;
-        if (source?.dataset.modalBody) modalBody.textContent = source.dataset.modalBody;
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
+        lastFocusedElement = document.activeElement;
+        setModalContent({
+          eyebrow: source?.dataset.modalEyebrow || "Virtual Scanner",
+          title: source?.dataset.modalTitle || "What Virtual Scanner does",
+          body: source?.dataset.modalBody || "Virtual Scanner is a local Windows TWAIN data source.",
+          link: source?.dataset.modalLink || "https://github.com/reubenleemiller/virtual-scanner",
+          linkLabel: source?.dataset.modalLinkLabel || "Open source",
+        });
+        document.body.classList.add("modal-open");
+        modal.classList.remove("hidden", "is-closing");
+        modal.classList.add("flex", "is-open");
         modal.setAttribute("aria-hidden", "false");
+        window.setTimeout(() => getFocusable(modalPanel)[0]?.focus(), 30);
       }
 
       function closeModal() {
-        modal.classList.add("hidden");
-        modal.classList.remove("flex");
-        modal.setAttribute("aria-hidden", "true");
+        if (modal.classList.contains("hidden")) return;
+        modal.classList.remove("is-open");
+        modal.classList.add("is-closing");
+        window.setTimeout(() => {
+          modal.classList.add("hidden");
+          modal.classList.remove("flex", "is-closing");
+          modal.setAttribute("aria-hidden", "true");
+          document.body.classList.remove("modal-open");
+          lastFocusedElement?.focus?.();
+        }, prefersReducedMotion ? 0 : 180);
       }
 
       function pulseButton(button, callback) {
@@ -546,29 +659,163 @@
           button.dataset.busy = "false";
           button.classList.remove("is-busy");
           callback();
-        }, 850);
+        }, prefersReducedMotion ? 0 : 420);
+      }
+
+      function skeleton(count = 4) {
+        return `<div class="skeleton-stack">${Array.from({ length: count }, () => `<div class="skeleton-line"></div>`).join("")}</div>`;
+      }
+
+      function githubState(kind) {
+        const map = {
+          issues: {
+            eyebrow: "GitHub activity",
+            title: "Recent issues",
+            body: "Open issues from the public repository, shown without leaving the site.",
+            path: "/issues?state=open&per_page=8",
+            link: "https://github.com/reubenleemiller/virtual-scanner/issues",
+            linkLabel: "Open issues",
+          },
+          runs: {
+            eyebrow: "GitHub activity",
+            title: "Build status",
+            body: "Recent workflow runs for release and site automation.",
+            path: "/actions/runs?per_page=8",
+            link: "https://github.com/reubenleemiller/virtual-scanner/actions",
+            linkLabel: "Open actions",
+          },
+          pulls: {
+            eyebrow: "GitHub activity",
+            title: "Pull requests",
+            body: "Recent pull requests from the public repository.",
+            path: "/pulls?state=all&per_page=8",
+            link: "https://github.com/reubenleemiller/virtual-scanner/pulls",
+            linkLabel: "Open pull requests",
+          },
+          commits: {
+            eyebrow: "GitHub activity",
+            title: "Latest commits",
+            body: "Recent commits from the main branch.",
+            path: "/commits?per_page=8",
+            link: "https://github.com/reubenleemiller/virtual-scanner/commits/main",
+            linkLabel: "Open commits",
+          },
+        };
+        return map[kind];
+      }
+
+      function renderGithubItems(kind, data) {
+        const items = kind === "runs" ? data.workflow_runs || [] : data || [];
+        const filtered = kind === "issues" ? items.filter((item) => !item.pull_request) : items;
+        if (!filtered.length) {
+          return `<div class="empty-state"><i class="fa-solid fa-circle-check"></i><p>Nothing to show right now.</p></div>`;
+        }
+
+        return `<div class="github-list">${filtered.slice(0, 6).map((item) => {
+          const title = item.title || item.display_title || item.commit?.message || item.name || "Repository update";
+          const url = item.html_url;
+          const status = item.state || item.conclusion || item.status || "latest";
+          const date = new Date(item.created_at || item.updated_at || item.commit?.author?.date || Date.now()).toLocaleString();
+          return `<a class="github-item" href="${escapeHtml(url)}" target="_blank" rel="noopener">
+            <span class="github-status">${escapeHtml(status)}</span>
+            <strong>${escapeHtml(title)}</strong>
+            <small>${escapeHtml(date)}</small>
+          </a>`;
+        }).join("")}</div>`;
+      }
+
+      async function openGithubModal(kind) {
+        const config = githubState(kind);
+        lastFocusedElement = document.activeElement;
+        setModalContent({ ...config, extra: skeleton(), link: config.link, linkLabel: config.linkLabel });
+        document.body.classList.add("modal-open");
+        modal.classList.remove("hidden", "is-closing");
+        modal.classList.add("flex", "is-open");
+        modal.setAttribute("aria-hidden", "false");
+        modalExtra.insertAdjacentHTML("beforeend", `<button class="secondary-button mt-4" data-refresh-github="${kind}"><i class="fa-solid fa-rotate button-icon"></i><span class="button-label">Refresh</span></button>`);
+        window.setTimeout(() => getFocusable(modalPanel)[0]?.focus(), 30);
+        await refreshGithubModal(kind);
+      }
+
+      async function refreshGithubModal(kind) {
+        const config = githubState(kind);
+        modalExtra.innerHTML = skeleton();
+        try {
+          const response = await fetch(`${GITHUB_BASE}${config.path}`, { headers: { accept: "application/vnd.github+json" } });
+          if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+          const data = await response.json();
+          modalExtra.innerHTML = `${renderGithubItems(kind, data)}<button class="secondary-button mt-4" data-refresh-github="${kind}"><i class="fa-solid fa-rotate button-icon"></i><span class="button-label">Refresh</span></button>`;
+        } catch {
+          modalExtra.innerHTML = `<div class="empty-state error"><i class="fa-solid fa-triangle-exclamation"></i><p>GitHub activity could not be loaded. You can still open the GitHub page.</p></div><button class="secondary-button mt-4" data-refresh-github="${kind}"><i class="fa-solid fa-rotate button-icon"></i><span class="button-label">Try again</span></button>`;
+        }
+      }
+
+      function validateContact(form) {
+        const data = Object.fromEntries(new FormData(form).entries());
+        const errors = {};
+        if (!data.name || data.name.trim().length < 2) errors.name = "Enter your name.";
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || "")) errors.email = "Enter a valid email.";
+        if (!data.subject || data.subject.trim().length < 3) errors.subject = "Enter a subject.";
+        if (!data.message || data.message.trim().length < 10) errors.message = "Enter at least 10 characters.";
+        form.querySelectorAll("[data-error-for]").forEach((el) => {
+          const key = el.dataset.errorFor;
+          el.textContent = errors[key] || "";
+          el.closest(".field-group")?.classList.toggle("has-error", Boolean(errors[key]));
+        });
+        return { data, errors };
+      }
+
+      async function submitContact(event) {
+        event.preventDefault();
+        const { data, errors } = validateContact(contactForm);
+        if (Object.keys(errors).length) {
+          contactStatus.className = "contact-status mt-4 is-error";
+          contactStatus.textContent = "Please fix the highlighted fields.";
+          return;
+        }
+
+        const endpoint = window.VIRTUAL_SCANNER_CONTACT_ENDPOINT || "/api/contact";
+        contactSubmit.disabled = true;
+        contactSubmit.classList.add("is-busy");
+        contactStatus.className = "contact-status mt-4 is-loading";
+        contactStatus.textContent = "Sending your message...";
+
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || "Message could not be sent.");
+          contactForm.reset();
+          contactStatus.className = "contact-status mt-4 is-success";
+          contactStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> Thanks. Your message was sent and a confirmation email is on its way.`;
+        } catch (error) {
+          contactStatus.className = "contact-status mt-4 is-error";
+          contactStatus.textContent = error.message || "Message could not be sent. Please try again later.";
+        } finally {
+          contactSubmit.disabled = false;
+          contactSubmit.classList.remove("is-busy");
+        }
       }
 
       function startDownload(button) {
         if (button.dataset.busy === "true") return;
         button.dataset.busy = "true";
         button.classList.add("is-busy");
-
         const ring = button.querySelector(".progress-ring");
         const text = button.querySelector(".progress-text");
         const url = button.dataset.url;
         const label = button.dataset.label || "file";
         let progress = 0;
-
         ring.style.setProperty("--progress", 0);
         text.textContent = "0%";
         showToast(`Preparing ${label} download...`);
-
         const timer = window.setInterval(() => {
           progress = Math.min(100, progress + 1);
           ring.style.setProperty("--progress", progress);
           text.textContent = `${progress}%`;
-
           if (progress >= 100) {
             window.clearInterval(timer);
             showToast("Download is starting now.");
@@ -581,29 +828,52 @@
         }, 24);
       }
 
-      downloadButtons.forEach((button) => {
-        button.addEventListener("click", () => startDownload(button));
-      });
-
-      modalButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          if (button.classList.contains("secondary-button")) {
-            pulseButton(button, () => openModal(button));
-          } else {
-            openModal(button);
-          }
-        });
-      });
+      downloadButtons.forEach((button) => button.addEventListener("click", () => startDownload(button)));
+      modalButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, () => openModal(button))));
+      githubButtons.forEach((button) => button.addEventListener("click", () => openGithubModal(button.dataset.githubModal)));
       actionButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, closeModal)));
       closeModalButtons.forEach((button) => {
         if (!button.dataset.actionButton) button.addEventListener("click", closeModal);
       });
+      contactForm.addEventListener("submit", submitContact);
+      contactForm.addEventListener("input", () => validateContact(contactForm));
       modal.addEventListener("click", (event) => {
         if (event.target === modal) closeModal();
+        const refresh = event.target.closest("[data-refresh-github]");
+        if (refresh) refreshGithubModal(refresh.dataset.refreshGithub);
       });
       window.addEventListener("keydown", (event) => {
         if (event.key === "Escape") closeModal();
+        if (event.key === "Tab" && !modal.classList.contains("hidden")) {
+          const focusable = getFocusable(modalPanel);
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
       });
+
+      const revealItems = document.querySelectorAll("section, .download-card, .info-tile, .feature-panel, .contact-card");
+      revealItems.forEach((item) => item.classList.add("reveal"));
+      if (!prefersReducedMotion && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.15 });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.classList.add("is-visible"));
+      }
     </script>
   </body>
 </html>
