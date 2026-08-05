@@ -395,17 +395,10 @@ grouped and do not overwrite each other.
 
 PDF files are also supported when Ghostscript is installed in the Windows VM.
 The full NSIS installer checks for Ghostscript and offers to install it when it
-is missing. Setup first tries Windows Package Manager (`winget`) and then offers
-to open the Ghostscript download page if automatic installation is unavailable
-in the elevated installer session.
+is missing. Setup downloads the official Windows Ghostscript installer, launches
+it, waits for it to finish, and then verifies that Ghostscript is available.
 
-For portable/manual installs, try:
-
-```powershell
-winget install -e --id ArtifexSoftware.GhostScript
-```
-
-If winget fails, download and install Ghostscript manually from:
+For portable/manual installs, download and install Ghostscript from:
 
 ```text
 https://ghostscript.com/releases/gsdnld.html

@@ -1,8 +1,5 @@
 param(
-    [string[]]$PackageIds = @(
-        "ArtifexSoftware.GhostScript",
-        "ArtifexSoftware.Ghostscript"
-    )
+    [string]$GhostscriptReleaseApi = "https://api.github.com/repos/ArtifexSoftware/ghostpdl-downloads/releases/latest"
 )
 
 $ErrorActionPreference = "Stop"
@@ -43,27 +40,55 @@ function Test-Ghostscript {
     return $false
 }
 
-function Find-Winget {
-    $command = Get-Command winget.exe -ErrorAction SilentlyContinue
-    if ($command) {
-        return $command.Source
+function Get-GhostscriptInstallerUrl {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+    $assetPattern = if ([Environment]::Is64BitOperatingSystem) {
+        "^gs\d+w64\.exe$"
+    } else {
+        "^gs\d+w32\.exe$"
     }
 
-    $candidates = @()
-    if ($env:LOCALAPPDATA) {
-        $candidates += Join-Path $env:LOCALAPPDATA "Microsoft\WindowsApps\winget.exe"
+    Write-Host "Looking up the latest Ghostscript Windows installer..."
+    $release = Invoke-RestMethod `
+        -Uri $GhostscriptReleaseApi `
+        -Headers @{ "User-Agent" = "VirtualScannerInstaller" } `
+        -UseBasicParsing
+
+    $asset = $release.assets |
+        Where-Object { $_.name -match $assetPattern } |
+        Select-Object -First 1
+
+    if (-not $asset) {
+        throw "Could not find a matching Ghostscript Windows installer asset."
     }
 
-    $candidates += Get-ChildItem -Path "C:\Users\*\AppData\Local\Microsoft\WindowsApps\winget.exe" -ErrorAction SilentlyContinue |
-        Select-Object -ExpandProperty FullName
+    return $asset.browser_download_url
+}
 
-    foreach ($candidate in $candidates) {
-        if ($candidate -and (Test-Path -LiteralPath $candidate)) {
-            return $candidate
-        }
+function Install-GhostscriptFromDownload {
+    $url = Get-GhostscriptInstallerUrl
+    $fileName = Split-Path ([Uri]$url).AbsolutePath -Leaf
+    $downloadPath = Join-Path $env:TEMP $fileName
+
+    Write-Host "Downloading Ghostscript from $url"
+    Invoke-WebRequest `
+        -Uri $url `
+        -OutFile $downloadPath `
+        -Headers @{ "User-Agent" = "VirtualScannerInstaller" } `
+        -UseBasicParsing
+
+    Write-Host "Launching Ghostscript installer: $downloadPath"
+    Write-Host "Complete the Ghostscript setup window, then this installer will continue."
+    $process = Start-Process -FilePath $downloadPath -Wait -PassThru
+    Write-Host "Ghostscript installer exited with code $($process.ExitCode)"
+
+    if (Test-Ghostscript) {
+        Write-Host "Ghostscript installed successfully from the downloaded installer."
+        return $true
     }
 
-    return $null
+    return $false
 }
 
 if (Test-Ghostscript) {
@@ -71,43 +96,13 @@ if (Test-Ghostscript) {
     exit 0
 }
 
-$winget = Find-Winget
-if (-not $winget) {
-    Write-Host "winget.exe was not found for this elevated installer session."
-    exit 2
-}
-
-Write-Host "Using winget: $winget"
-
 try {
-    & $winget source update --accept-source-agreements
-} catch {
-    Write-Host "winget source update failed, continuing anyway: $($_.Exception.Message)"
-}
-
-foreach ($packageId in $PackageIds) {
-    Write-Host "Trying Ghostscript package id: $packageId"
-    & $winget install `
-        --exact `
-        --id $packageId `
-        --source winget `
-        --accept-package-agreements `
-        --accept-source-agreements `
-        --disable-interactivity
-
-    $exitCode = $LASTEXITCODE
-    Write-Host "winget exited with code $exitCode for $packageId"
-
-    if ($exitCode -eq 0 -and (Test-Ghostscript)) {
-        Write-Host "Ghostscript installed successfully."
+    if (Install-GhostscriptFromDownload) {
         exit 0
     }
+} catch {
+    Write-Host "Ghostscript download or installer launch failed: $($_.Exception.Message)"
 }
 
-if (Test-Ghostscript) {
-    Write-Host "Ghostscript was found after winget completed."
-    exit 0
-}
-
-Write-Host "Ghostscript was not installed by winget."
+Write-Host "Ghostscript was not installed."
 exit 3

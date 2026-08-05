@@ -73,12 +73,12 @@ Section -Prerequisites
         DetailPrint "Ghostscript found."
     ${Else}
         DetailPrint "Ghostscript was not found."
-        MessageBox MB_YESNO|MB_ICONQUESTION "Ghostscript is required for scanning PDF files. Install Ghostscript now? Setup will try Windows Package Manager (winget), and you can install it manually if winget is unavailable." IDYES install_ghostscript IDNO skip_ghostscript
+        MessageBox MB_YESNO|MB_ICONQUESTION "Ghostscript is required for scanning PDF files. Download and run the official Ghostscript installer now?" IDYES install_ghostscript IDNO skip_ghostscript
 
         install_ghostscript:
             InitPluginsDir
             File /oname=$PLUGINSDIR\install-ghostscript.ps1 "${SOURCE_DIR}/installer/install-ghostscript.ps1"
-            DetailPrint "Installing Ghostscript..."
+            DetailPrint "Downloading and installing Ghostscript..."
             nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\install-ghostscript.ps1"'
             Pop $0
             Call IsGhostscriptInstalled
@@ -87,17 +87,13 @@ Section -Prerequisites
                 DetailPrint "Ghostscript installed."
             ${Else}
                 DetailPrint "Ghostscript installation exited with code $0."
-                MessageBox MB_YESNO|MB_ICONEXCLAMATION "Ghostscript could not be installed automatically. Virtual Scanner will still be installed, but PDF scanning will require Ghostscript to be installed later.$\r$\n$\r$\nOpen the Ghostscript download page now?" IDYES open_ghostscript_download IDNO done_ghostscript
-                open_ghostscript_download:
-                    ExecShell "open" "https://ghostscript.com/releases/gsdnld.html"
+                MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript could not be installed. Virtual Scanner will still be installed, but PDF scanning will require Ghostscript to be installed later."
             ${EndIf}
             Goto done_ghostscript
 
         skip_ghostscript:
             DetailPrint "Ghostscript installation skipped. PDF scanning will be unavailable until Ghostscript is installed."
-            MessageBox MB_YESNO|MB_ICONINFORMATION "PDF scanning will be unavailable until Ghostscript is installed.$\r$\n$\r$\nOpen the Ghostscript download page now?" IDYES open_ghostscript_download_skipped IDNO done_ghostscript
-            open_ghostscript_download_skipped:
-                ExecShell "open" "https://ghostscript.com/releases/gsdnld.html"
+            MessageBox MB_OK|MB_ICONINFORMATION "PDF scanning will be unavailable until Ghostscript is installed."
 
         done_ghostscript:
     ${EndIf}
