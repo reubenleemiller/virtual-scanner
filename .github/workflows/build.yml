@@ -101,6 +101,9 @@ jobs:
             dist/SHA256SUMS.txt
           )
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release edit "${GITHUB_REF_NAME}" \
+              --title "Virtual Scanner ${VERSION}" \
+              --notes "Built from GitHub Actions for ${GITHUB_SHA}."
             gh release upload "${GITHUB_REF_NAME}" "${release_assets[@]}" --clobber
           else
             gh release create "${GITHUB_REF_NAME}" "${release_assets[@]}" \
