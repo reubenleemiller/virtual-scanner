@@ -421,8 +421,7 @@
             <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Open source, reproducible releases, local files.</h2>
             <p class="mt-4 text-base leading-7 text-slate-700">
               The source code, installer script, release workflow, privacy policy, and license are public.
-              GitHub Actions builds the release files from that source, and each release can include SHA256
-              checksums so downloads can be verified.
+              Release files are published with SHA256 checksums so downloads can be verified.
             </p>
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
@@ -434,7 +433,7 @@
             <div class="info-tile">
               <span><i class="fa-solid fa-gears" aria-hidden="true"></i> Builds</span>
               <h3>Automated builds</h3>
-              <p>Windows installers and portable packages are produced by GitHub Actions.</p>
+              <p>Windows installers and portable packages are produced from the public project source.</p>
             </div>
             <div class="info-tile">
               <span><i class="fa-solid fa-house-laptop" aria-hidden="true"></i> Local</span>
@@ -457,13 +456,13 @@
             <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Questions, bugs, or workflow ideas?</h2>
             <p class="mt-4 text-base leading-7 text-slate-700">
               Send a message about installation, TWAIN compatibility, supported files, or release builds.
-              The form validates before sending, blocks duplicate submissions, and shows a confirmation
-              when the Vercel API endpoint accepts the message.
+              The form checks your message before sending, blocks duplicate submissions, and confirms
+              when your note has been received.
             </p>
             <div class="mt-5 grid gap-3 text-sm text-slate-700">
-              <p><i class="fa-solid fa-shield-halved text-reef" aria-hidden="true"></i> Honeypot and server-side validation are included.</p>
-              <p><i class="fa-solid fa-reply text-reef" aria-hidden="true"></i> A confirmation email is sent after successful submission.</p>
-              <p><i class="fa-solid fa-lock text-reef" aria-hidden="true"></i> Resend API keys stay on Vercel, never in browser code.</p>
+              <p><i class="fa-solid fa-shield-halved text-reef" aria-hidden="true"></i> Messages are checked on the page and again on the server.</p>
+              <p><i class="fa-solid fa-reply text-reef" aria-hidden="true"></i> You will see an on-screen confirmation as soon as the message sends.</p>
+              <p><i class="fa-solid fa-lock text-reef" aria-hidden="true"></i> Private mail credentials stay on the server, never in browser code.</p>
             </div>
           </div>
 
@@ -524,8 +523,8 @@
         <div>
           <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Project</h3>
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner"><i class="fa-brands fa-github" aria-hidden="true"></i> Source repository</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2"><i class="fa-solid fa-box-archive" aria-hidden="true"></i> Latest release</a>
+            <button type="button" class="footer-link text-left" data-info-modal="source"><i class="fa-brands fa-github" aria-hidden="true"></i> Source repository</button>
+            <button type="button" class="footer-link text-left" data-info-modal="release"><i class="fa-solid fa-box-archive" aria-hidden="true"></i> Latest release</button>
             <button type="button" class="footer-link text-left" data-github-modal="runs"><i class="fa-solid fa-diagram-project" aria-hidden="true"></i> Build status</button>
             <button type="button" class="footer-link text-left" data-github-modal="issues"><i class="fa-solid fa-comments" aria-hidden="true"></i> Recent issues</button>
             <button type="button" class="footer-link text-left" data-github-modal="pulls"><i class="fa-solid fa-code-pull-request" aria-hidden="true"></i> Pull requests</button>
@@ -535,38 +534,17 @@
         <div>
           <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Details</h3>
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT License</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md"><i class="fa-solid fa-user-shield" aria-hidden="true"></i> Privacy Policy</a>
-            <a class="footer-link" href="https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md"><i class="fa-solid fa-lock" aria-hidden="true"></i> Security Policy</a>
-            <button
-              type="button"
-              class="footer-link text-left"
-              data-modal
-              data-modal-eyebrow="Supported files"
-              data-modal-title="Files Virtual Scanner can use"
-              data-modal-body="Virtual Scanner is built for local image and document workflows. Add PNG, JPG, TIFF, or PDF files to the inbox helper, choose Virtual Scanner in a TWAIN-compatible app, and the queued file is transferred as one or more scanned pages."
-            >
-              <i class="fa-solid fa-file-import" aria-hidden="true"></i>
-              Supported files
-            </button>
-            <button
-              type="button"
-              class="footer-link text-left"
-              data-modal
-              data-modal-eyebrow="Privacy"
-              data-modal-title="Local-first privacy"
-              data-modal-body="Virtual Scanner runs locally. Selected image and PDF files stay on the user's Windows computer unless the user separately shares them through another application. The project does not collect, transmit, sell, or share personal data."
-            >
-              <i class="fa-solid fa-house-laptop" aria-hidden="true"></i>
-              Privacy summary
-            </button>
+            <button type="button" class="footer-link text-left" data-info-modal="license"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT License</button>
+            <button type="button" class="footer-link text-left" data-info-modal="privacy"><i class="fa-solid fa-user-shield" aria-hidden="true"></i> Privacy Policy</button>
+            <button type="button" class="footer-link text-left" data-info-modal="security"><i class="fa-solid fa-lock" aria-hidden="true"></i> Security Policy</button>
+            <button type="button" class="footer-link text-left" data-info-modal="files"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Supported files</button>
+            <button type="button" class="footer-link text-left" data-info-modal="privacy-summary"><i class="fa-solid fa-house-laptop" aria-hidden="true"></i> Privacy summary</button>
           </div>
         </div>
       </div>
       <div class="border-t border-white/10">
         <div class="mx-auto flex max-w-7xl flex-col gap-3 px-5 py-5 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between sm:px-8">
           <p>Copyright &copy; 2026 Reuben Miller. Released under the MIT License.</p>
-          <p>Built from public source with GitHub Actions.</p>
         </div>
       </div>
     </footer>
@@ -588,6 +566,7 @@
       const actionButtons = document.querySelectorAll("[data-action-button]");
       const modalButtons = document.querySelectorAll("[data-modal]");
       const githubButtons = document.querySelectorAll("[data-github-modal]");
+      const infoButtons = document.querySelectorAll("[data-info-modal]");
       const closeModalButtons = document.querySelectorAll("[data-close-modal]");
       const contactForm = document.querySelector("#contact-form");
       const contactStatus = document.querySelector("#contact-status");
@@ -704,6 +683,107 @@
         return map[kind];
       }
 
+      function licenseSummary() {
+        return `<div class="license-summary">
+          <div>
+            <h4><i class="fa-solid fa-circle-check"></i> Permissions</h4>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Commercial use</li>
+              <li><i class="fa-solid fa-check"></i> Modification</li>
+              <li><i class="fa-solid fa-check"></i> Distribution</li>
+              <li><i class="fa-solid fa-check"></i> Private use</li>
+            </ul>
+          </div>
+          <div>
+            <h4><i class="fa-solid fa-circle-info"></i> Conditions</h4>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Include the license and copyright notice</li>
+            </ul>
+          </div>
+          <div>
+            <h4><i class="fa-solid fa-circle-xmark"></i> Limitations</h4>
+            <ul>
+              <li><i class="fa-solid fa-xmark"></i> No warranty</li>
+              <li><i class="fa-solid fa-xmark"></i> No liability</li>
+            </ul>
+          </div>
+        </div>`;
+      }
+
+      function infoState(kind) {
+        const map = {
+          source: {
+            eyebrow: "Repository",
+            title: "Source repository",
+            body: "Virtual Scanner is developed in a public GitHub repository. The source includes the Windows data source, installer scripts, release workflow, documentation, and project policies.",
+            extra: `<div class="modal-note"><i class="fa-brands fa-github"></i><p>Use the repository to inspect source code, review changes, download tagged releases, or open a discussion through issues.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner",
+            linkLabel: "Open repository",
+          },
+          release: {
+            eyebrow: "Release",
+            title: "Latest release",
+            body: "The latest release page contains the Windows installer downloads, portable ZIP files, and checksums generated by the release workflow.",
+            extra: `<div class="modal-note"><i class="fa-solid fa-shield-halved"></i><p>Use the checksum file on the release page when you want to verify a downloaded installer or ZIP.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2",
+            linkLabel: "Open release",
+          },
+          license: {
+            eyebrow: "License",
+            title: "MIT License",
+            body: "Virtual Scanner is released under the MIT License, a permissive open-source license that allows broad use while keeping the copyright and license notice attached.",
+            extra: licenseSummary(),
+            link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE",
+            linkLabel: "Open license",
+          },
+          privacy: {
+            eyebrow: "Privacy",
+            title: "Privacy Policy",
+            body: "Virtual Scanner is local-first software. Selected files stay on the user's Windows computer unless the user separately shares them through another application.",
+            extra: `<div class="modal-note"><i class="fa-solid fa-user-shield"></i><p>The project does not collect, sell, or share personal data from the scanner workflow.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md",
+            linkLabel: "Open policy",
+          },
+          security: {
+            eyebrow: "Security",
+            title: "Security Policy",
+            body: "Security reports should be handled carefully and privately when they involve a potential vulnerability in the installer, helper, or TWAIN data source.",
+            extra: `<div class="modal-note"><i class="fa-solid fa-lock"></i><p>For sensitive reports, use the policy instructions instead of posting exploit details in a public issue.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/SECURITY.md",
+            linkLabel: "Open policy",
+          },
+          files: {
+            eyebrow: "Supported files",
+            title: "Files Virtual Scanner can use",
+            body: "Virtual Scanner is built for local image and document workflows. Add PNG, JPG, TIFF, or PDF files to the inbox helper, choose Virtual Scanner in a TWAIN-compatible app, and the queued file is transferred as one or more scanned pages.",
+            extra: `<div class="modal-note"><i class="fa-solid fa-file-import"></i><p>PDF files are converted into scanned pages, while image files are passed through as the selected scan source.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner#readme",
+            linkLabel: "Open docs",
+          },
+          "privacy-summary": {
+            eyebrow: "Privacy",
+            title: "Local-first privacy",
+            body: "Virtual Scanner runs locally. Selected image and PDF files stay on the user's Windows computer unless the user separately shares them through another application.",
+            extra: `<div class="modal-note"><i class="fa-solid fa-house-laptop"></i><p>The website contact form is separate from the scanner workflow and is used only when someone chooses to send a message.</p></div>`,
+            link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/PRIVACY.md",
+            linkLabel: "Open policy",
+          },
+        };
+        return map[kind];
+      }
+
+      function openInfoModal(kind) {
+        const config = infoState(kind);
+        if (!config) return;
+        lastFocusedElement = document.activeElement;
+        setModalContent(config);
+        document.body.classList.add("modal-open");
+        modal.classList.remove("hidden", "is-closing");
+        modal.classList.add("flex", "is-open");
+        modal.setAttribute("aria-hidden", "false");
+        window.setTimeout(() => getFocusable(modalPanel)[0]?.focus(), 30);
+      }
+
       function renderGithubItems(kind, data) {
         const items = kind === "runs" ? data.workflow_runs || [] : data || [];
         const filtered = kind === "issues" ? items.filter((item) => !item.pull_request) : items;
@@ -788,15 +868,31 @@
           });
           const result = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(result.error || "Message could not be sent.");
+          contactSubmit.classList.add("is-complete");
+          await new Promise((resolve) => window.setTimeout(resolve, prefersReducedMotion ? 0 : 420));
           contactForm.reset();
-          contactStatus.className = "contact-status mt-4 is-success";
-          contactStatus.innerHTML = `<i class="fa-solid fa-circle-check"></i> Thanks. Your message was sent and a confirmation email is on its way.`;
+          contactForm.className = "contact-card contact-success-card";
+          contactForm.setAttribute("aria-label", "Message sent");
+          contactForm.innerHTML = `
+            <div class="success-check" aria-hidden="true">
+              <span></span>
+            </div>
+            <p class="text-xs font-bold uppercase tracking-[.24em] text-reef">Message sent</p>
+            <h3 tabindex="-1" class="success-title mt-2 text-2xl font-black text-ink">Thank you for your message.</h3>
+            <p class="mt-3 text-base leading-7 text-slate-700">
+              We will do our best to get back to you as soon as we can. We typically respond within
+              24-48 hours.
+            </p>
+          `;
+          contactForm.querySelector(".success-title")?.focus();
         } catch (error) {
           contactStatus.className = "contact-status mt-4 is-error";
           contactStatus.textContent = error.message || "Message could not be sent. Please try again later.";
         } finally {
-          contactSubmit.disabled = false;
-          contactSubmit.classList.remove("is-busy");
+          if (document.body.contains(contactSubmit)) {
+            contactSubmit.disabled = false;
+            contactSubmit.classList.remove("is-busy", "is-complete");
+          }
         }
       }
 
@@ -831,6 +927,7 @@
       downloadButtons.forEach((button) => button.addEventListener("click", () => startDownload(button)));
       modalButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, () => openModal(button))));
       githubButtons.forEach((button) => button.addEventListener("click", () => openGithubModal(button.dataset.githubModal)));
+      infoButtons.forEach((button) => button.addEventListener("click", () => openInfoModal(button.dataset.infoModal)));
       actionButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, closeModal)));
       closeModalButtons.forEach((button) => {
         if (!button.dataset.actionButton) button.addEventListener("click", closeModal);
