@@ -17,8 +17,10 @@
 !define STARTMENU_FOLDER "Virtual Scanner"
 !if "${ARCH}" == "x86"
 !define TWAIN_FOLDER "twain_32"
+!define GHOSTSCRIPT_EXE "gswin32c.exe"
 !else
 !define TWAIN_FOLDER "twain_64"
+!define GHOSTSCRIPT_EXE "gswin64c.exe"
 !endif
 !define INSTALL_DIR "$WINDIR\${TWAIN_FOLDER}\VirtualScanner-${ARCH}"
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\VirtualScanner-${ARCH}"
@@ -52,7 +54,7 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 !define MUI_WELCOMEPAGE_TEXT "Setup will install ${APP_NAME}, create an inbox folder for scan files, add desktop and Start Menu shortcuts, and check for Ghostscript so PDF files can be scanned."
 !insertmacro MUI_PAGE_WELCOME
 !define MUI_LICENSEPAGE_CHECKBOX
-!insertmacro MUI_PAGE_LICENSE "${SOURCE_DIR}/LICENSE"
+!insertmacro MUI_PAGE_LICENSE "${SOURCE_DIR}/installer/license-agreement.txt"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_TITLE "${APP_NAME} is ready"
@@ -66,39 +68,6 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_LANGUAGE "English"
 
-Section -Prerequisites
-    Call IsGhostscriptInstalled
-    Pop $0
-    ${If} $0 == "1"
-        DetailPrint "Ghostscript found."
-    ${Else}
-        DetailPrint "Ghostscript was not found."
-        MessageBox MB_YESNO|MB_ICONQUESTION "Ghostscript is required for scanning PDF files. Download and run the official Ghostscript installer now?" IDYES install_ghostscript IDNO skip_ghostscript
-
-        install_ghostscript:
-            InitPluginsDir
-            File /oname=$PLUGINSDIR\install-ghostscript.ps1 "${SOURCE_DIR}/installer/install-ghostscript.ps1"
-            DetailPrint "Downloading and installing Ghostscript..."
-            nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\install-ghostscript.ps1"'
-            Pop $0
-            Call IsGhostscriptInstalled
-            Pop $1
-            ${If} $1 == "1"
-                DetailPrint "Ghostscript installed."
-            ${Else}
-                DetailPrint "Ghostscript installation exited with code $0."
-                MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript could not be installed. Virtual Scanner will still be installed, but PDF scanning will require Ghostscript to be installed later."
-            ${EndIf}
-            Goto done_ghostscript
-
-        skip_ghostscript:
-            DetailPrint "Ghostscript installation skipped. PDF scanning will be unavailable until Ghostscript is installed."
-            MessageBox MB_OK|MB_ICONINFORMATION "PDF scanning will be unavailable until Ghostscript is installed."
-
-        done_ghostscript:
-    ${EndIf}
-SectionEnd
-
 Section "Virtual Scanner" SEC_APP
     SectionIn RO
     ReadEnvStr $0 "PUBLIC"
@@ -111,6 +80,13 @@ Section "Virtual Scanner" SEC_APP
     File "${SOURCE_DIR}/app/VirtualScannerInbox.ps1"
     File "${SOURCE_DIR}/app/VirtualScannerInbox.vbs"
     File "${SOURCE_DIR}/app/VirtualScanner.ico"
+    File "${SOURCE_DIR}/LICENSE"
+    File "${SOURCE_DIR}/NOTICE"
+    File "${SOURCE_DIR}/THIRD_PARTY_NOTICES.md"
+    CreateDirectory "$INSTDIR\Ghostscript"
+    SetOutPath "$INSTDIR\Ghostscript"
+    File /r "${SOURCE_DIR}/dist/ghostscript-${ARCH}\*.*"
+    SetOutPath "$INSTDIR"
     CreateDirectory "$SMPROGRAMS\${STARTMENU_FOLDER}"
     WriteUninstaller "$INSTDIR\Uninstall.exe"
     CreateShortCut "$SMPROGRAMS\${STARTMENU_FOLDER}\Virtual Scanner Inbox.lnk" "$WINDIR\System32\wscript.exe" "$\"$INSTDIR\VirtualScannerInbox.vbs$\"" "$INSTDIR\VirtualScanner.ico" 0
@@ -126,6 +102,7 @@ Section "Virtual Scanner" SEC_APP
     WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoModify" 1
     WriteRegDWORD HKLM "${UNINSTALL_KEY}" "NoRepair" 1
     WriteRegStr HKLM "${ENV_KEY}" "VIRTUAL_SCANNER_INBOX" "$1"
+    WriteRegStr HKLM "${ENV_KEY}" "VIRTUAL_SCANNER_GHOSTSCRIPT" "$INSTDIR\Ghostscript\bin\${GHOSTSCRIPT_EXE}"
     SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
@@ -141,61 +118,14 @@ Section "Uninstall"
     Delete "$INSTDIR\VirtualScannerInbox.vbs"
     Delete "$INSTDIR\VirtualScannerInbox.ps1"
     Delete "$INSTDIR\VirtualScanner.ds"
+    Delete "$INSTDIR\LICENSE"
+    Delete "$INSTDIR\NOTICE"
+    Delete "$INSTDIR\THIRD_PARTY_NOTICES.md"
     Delete "$INSTDIR\Uninstall.exe"
+    RMDir /r "$INSTDIR\Ghostscript"
     RMDir "$INSTDIR"
     DeleteRegKey HKLM "${UNINSTALL_KEY}"
     DeleteRegValue HKLM "${ENV_KEY}" "VIRTUAL_SCANNER_INBOX"
+    DeleteRegValue HKLM "${ENV_KEY}" "VIRTUAL_SCANNER_GHOSTSCRIPT"
     SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
-
-Function IsGhostscriptInstalled
-    Push $0
-    Push $1
-
-    ReadEnvStr $0 "VIRTUAL_SCANNER_GHOSTSCRIPT"
-    ${If} $0 != ""
-    ${AndIf} ${FileExists} "$0"
-        StrCpy $0 "1"
-        Goto done
-    ${EndIf}
-
-    nsExec::ExecToStack '"$SYSDIR\where.exe" gswin64c.exe'
-    Pop $1
-    Pop $0
-    ${If} $1 == "0"
-        StrCpy $0 "1"
-        Goto done
-    ${EndIf}
-
-    nsExec::ExecToStack '"$SYSDIR\where.exe" gswin32c.exe'
-    Pop $1
-    Pop $0
-    ${If} $1 == "0"
-        StrCpy $0 "1"
-        Goto done
-    ${EndIf}
-
-    ${If} ${RunningX64}
-        ${If} ${FileExists} "$PROGRAMFILES64\gs\gs*\bin\gswin64c.exe"
-            StrCpy $0 "1"
-            Goto done
-        ${EndIf}
-    ${EndIf}
-
-    ${If} ${FileExists} "$PROGRAMFILES32\gs\gs*\bin\gswin32c.exe"
-    ${OrIf} ${FileExists} "$PROGRAMFILES32\gs\gs*\bin\gswin64c.exe"
-        StrCpy $0 "1"
-        Goto done
-    ${EndIf}
-
-    ${If} ${FileExists} "$PROGRAMFILES\gs\gs*\bin\gswin64c.exe"
-    ${OrIf} ${FileExists} "$PROGRAMFILES\gs\gs*\bin\gswin32c.exe"
-        StrCpy $0 "1"
-    ${Else}
-        StrCpy $0 "0"
-    ${EndIf}
-
-    done:
-    Pop $1
-    Exch $0
-FunctionEnd

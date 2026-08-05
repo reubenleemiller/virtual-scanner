@@ -71,6 +71,17 @@ sign_file() {
     mv "${signed_file}" "${file}"
 }
 
+bundle_ghostscript() {
+    local arch="$1"
+    local flavor="win64"
+
+    if [[ "${arch}" == "x86" ]]; then
+        flavor="win32"
+    fi
+
+    bash scripts/bundle-ghostscript.sh "${flavor}" "dist/ghostscript-${arch}"
+}
+
 rm -rf dist
 mkdir -p dist
 decode_signing_certificate
@@ -80,6 +91,7 @@ make ARCH=x64 CC=x86_64-w64-mingw32-clang++
 mkdir -p dist/x64
 cp build/x64/VirtualScanner.ds dist/x64/VirtualScanner.ds
 sign_file "dist/x64/VirtualScanner.ds"
+bundle_ghostscript x64
 makensis -V2 -DVERSION="${VERSION}" -DARCH=x64 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-x64-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-x64.zip" "dist/VirtualScanner-${VERSION}-x64-setup.exe"
@@ -92,6 +104,7 @@ make ARCH=x86 CC=i686-w64-mingw32-clang++
 mkdir -p dist/x86
 cp build/x86/VirtualScanner.ds dist/x86/VirtualScanner.ds
 sign_file "dist/x86/VirtualScanner.ds"
+bundle_ghostscript x86
 makensis -V2 -DVERSION="${VERSION}" -DARCH=x86 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-x86-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-x86.zip" "dist/VirtualScanner-${VERSION}-x86-setup.exe"
@@ -104,6 +117,7 @@ make ARCH=arm64 CC=aarch64-w64-mingw32-clang++
 mkdir -p dist/arm64
 cp build/arm64/VirtualScanner.ds dist/arm64/VirtualScanner.ds
 sign_file "dist/arm64/VirtualScanner.ds"
+bundle_ghostscript arm64
 makensis -V2 -DVERSION="${VERSION}" -DARCH=arm64 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-arm64-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-arm64.zip" "dist/VirtualScanner-${VERSION}-arm64-setup.exe"

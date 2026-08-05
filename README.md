@@ -393,12 +393,13 @@ C:\Users\Public\Documents\VirtualScannerInbox\Scanned\yyyyMMdd-HHmmss-fff
 Each transferred image goes into a timestamped folder so separate scan runs stay
 grouped and do not overwrite each other.
 
-PDF files are also supported when Ghostscript is installed in the Windows VM.
-The full NSIS installer checks for Ghostscript and offers to install it when it
-is missing. Setup downloads the official Windows Ghostscript installer, launches
-it, waits for it to finish, and then verifies that Ghostscript is available.
+PDF files are supported by the full NSIS installer because it bundles
+Ghostscript inside the Virtual Scanner installation folder and points
+`VIRTUAL_SCANNER_GHOSTSCRIPT` at that bundled executable. No separate
+Ghostscript installer or winget step is required.
 
-For portable/manual installs, download and install Ghostscript from:
+Portable/manual installs do not bundle Ghostscript. For those installs, download
+and install Ghostscript from:
 
 ```text
 https://ghostscript.com/releases/gsdnld.html

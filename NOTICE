@@ -10,3 +10,8 @@ documentation, and bundled project assets are provided under the MIT License.
 This project implements a TWAIN-compatible virtual scanner data source. TWAIN is
 a third-party standard; this repository does not grant rights to any third-party
 trademarks.
+
+The Windows installer bundles Ghostscript binaries from Artifex Software, Inc.
+for local PDF conversion. Ghostscript is a separate third-party component and is
+distributed by Artifex under the GNU Affero General Public License or Artifex
+commercial licensing terms. See THIRD_PARTY_NOTICES.md for details.
