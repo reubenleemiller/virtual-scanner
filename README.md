@@ -394,11 +394,21 @@ Each transferred image goes into a timestamped folder so separate scan runs stay
 grouped and do not overwrite each other.
 
 PDF files are also supported when Ghostscript is installed in the Windows VM.
-The full NSIS installer checks for Ghostscript and offers to install it with
-winget when it is missing. For portable/manual installs, install it with:
+The full NSIS installer checks for Ghostscript and offers to install it when it
+is missing. Setup first tries Windows Package Manager (`winget`) and then offers
+to open the Ghostscript download page if automatic installation is unavailable
+in the elevated installer session.
+
+For portable/manual installs, try:
 
 ```powershell
 winget install -e --id ArtifexSoftware.GhostScript
+```
+
+If winget fails, download and install Ghostscript manually from:
+
+```text
+https://ghostscript.com/releases/gsdnld.html
 ```
 
 Then place a PDF in the inbox. If no image files are waiting, the scanner will

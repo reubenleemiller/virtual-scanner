@@ -51,6 +51,8 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 !define MUI_WELCOMEPAGE_TITLE "Install ${APP_NAME} ${ARCH}"
 !define MUI_WELCOMEPAGE_TEXT "Setup will install ${APP_NAME}, create an inbox folder for scan files, add desktop and Start Menu shortcuts, and check for Ghostscript so PDF files can be scanned."
 !insertmacro MUI_PAGE_WELCOME
+!define MUI_LICENSEPAGE_CHECKBOX
+!insertmacro MUI_PAGE_LICENSE "${SOURCE_DIR}/LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_TITLE "${APP_NAME} is ready"
@@ -71,22 +73,31 @@ Section -Prerequisites
         DetailPrint "Ghostscript found."
     ${Else}
         DetailPrint "Ghostscript was not found."
-        MessageBox MB_YESNO|MB_ICONQUESTION "Ghostscript is required for scanning PDF files. Install Ghostscript now with Windows Package Manager (winget)?" IDYES install_ghostscript IDNO skip_ghostscript
+        MessageBox MB_YESNO|MB_ICONQUESTION "Ghostscript is required for scanning PDF files. Install Ghostscript now? Setup will try Windows Package Manager (winget), and you can install it manually if winget is unavailable." IDYES install_ghostscript IDNO skip_ghostscript
 
         install_ghostscript:
-            DetailPrint "Installing Ghostscript with winget..."
-            nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -Command "if (-not (Get-Command winget.exe -ErrorAction SilentlyContinue)) { exit 2 }; winget install -e --id ArtifexSoftware.GhostScript --accept-package-agreements --accept-source-agreements"'
+            InitPluginsDir
+            File /oname=$PLUGINSDIR\install-ghostscript.ps1 "${SOURCE_DIR}/installer/install-ghostscript.ps1"
+            DetailPrint "Installing Ghostscript..."
+            nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -ExecutionPolicy Bypass -File "$PLUGINSDIR\install-ghostscript.ps1"'
             Pop $0
-            ${If} $0 == "0"
+            Call IsGhostscriptInstalled
+            Pop $1
+            ${If} $1 == "1"
                 DetailPrint "Ghostscript installed."
             ${Else}
                 DetailPrint "Ghostscript installation exited with code $0."
-                MessageBox MB_OK|MB_ICONEXCLAMATION "Ghostscript could not be installed automatically. Virtual Scanner will still be installed, but PDF scanning will require Ghostscript to be installed later."
+                MessageBox MB_YESNO|MB_ICONEXCLAMATION "Ghostscript could not be installed automatically. Virtual Scanner will still be installed, but PDF scanning will require Ghostscript to be installed later.$\r$\n$\r$\nOpen the Ghostscript download page now?" IDYES open_ghostscript_download IDNO done_ghostscript
+                open_ghostscript_download:
+                    ExecShell "open" "https://ghostscript.com/releases/gsdnld.html"
             ${EndIf}
             Goto done_ghostscript
 
         skip_ghostscript:
             DetailPrint "Ghostscript installation skipped. PDF scanning will be unavailable until Ghostscript is installed."
+            MessageBox MB_YESNO|MB_ICONINFORMATION "PDF scanning will be unavailable until Ghostscript is installed.$\r$\n$\r$\nOpen the Ghostscript download page now?" IDYES open_ghostscript_download_skipped IDNO done_ghostscript
+            open_ghostscript_download_skipped:
+                ExecShell "open" "https://ghostscript.com/releases/gsdnld.html"
 
         done_ghostscript:
     ${EndIf}
