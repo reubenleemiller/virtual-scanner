@@ -436,6 +436,11 @@
               <p>Windows installers and portable packages are produced from the public project source.</p>
             </div>
             <div class="info-tile">
+              <span><i class="fa-solid fa-signature" aria-hidden="true"></i> Signing</span>
+              <h3>Code signing policy</h3>
+              <p>Release signing is restricted to artifacts built from the public repository workflow.</p>
+            </div>
+            <div class="info-tile">
               <span><i class="fa-solid fa-house-laptop" aria-hidden="true"></i> Local</span>
               <h3>No data collection</h3>
               <p>Selected files stay on the user's Windows computer unless shared separately.</p>
@@ -535,6 +540,7 @@
           <h3 class="text-sm font-black uppercase tracking-[.18em] text-sky-200">Details</h3>
           <div class="mt-4 grid gap-3 text-sm text-slate-300">
             <button type="button" class="footer-link text-left" data-info-modal="license"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i> MIT License</button>
+            <button type="button" class="footer-link text-left" data-info-modal="code-signing"><i class="fa-solid fa-signature" aria-hidden="true"></i> Code signing policy</button>
             <button type="button" class="footer-link text-left" data-info-modal="privacy"><i class="fa-solid fa-user-shield" aria-hidden="true"></i> Privacy Policy</button>
             <button type="button" class="footer-link text-left" data-info-modal="security"><i class="fa-solid fa-lock" aria-hidden="true"></i> Security Policy</button>
             <button type="button" class="footer-link text-left" data-info-modal="files"><i class="fa-solid fa-file-import" aria-hidden="true"></i> Supported files</button>
@@ -710,6 +716,34 @@
         </div>`;
       }
 
+      function codeSigningSummary() {
+        return `<div class="license-summary">
+          <div>
+            <h4><i class="fa-solid fa-circle-check"></i> Provider</h4>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Free code signing provided by SignPath.io, certificate by SignPath Foundation</li>
+              <li><i class="fa-solid fa-check"></i> Pending SignPath Foundation approval</li>
+            </ul>
+          </div>
+          <div>
+            <h4><i class="fa-solid fa-circle-info"></i> Roles</h4>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Author: Reuben Miller</li>
+              <li><i class="fa-solid fa-check"></i> Reviewer: Reuben Miller</li>
+              <li><i class="fa-solid fa-check"></i> Approver: Reuben Miller</li>
+            </ul>
+          </div>
+          <div>
+            <h4><i class="fa-solid fa-lock"></i> Release rules</h4>
+            <ul>
+              <li><i class="fa-solid fa-check"></i> Signing requests must come from the public repository workflow</li>
+              <li><i class="fa-solid fa-check"></i> Repository and signing access require multi-factor authentication</li>
+              <li><i class="fa-solid fa-check"></i> Release downloads include SHA256 checksums</li>
+            </ul>
+          </div>
+        </div>`;
+      }
+
       function infoState(kind) {
         const map = {
           source: {
@@ -735,6 +769,14 @@
             extra: licenseSummary(),
             link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/LICENSE",
             linkLabel: "Open license",
+          },
+          "code-signing": {
+            eyebrow: "Code signing policy",
+            title: "Code signing policy",
+            body: "Virtual Scanner is applying for open-source release signing through SignPath Foundation. Release signing is restricted to artifacts built from the public repository workflow.",
+            extra: codeSigningSummary(),
+            link: "https://github.com/reubenleemiller/virtual-scanner/blob/main/CODE_SIGNING_POLICY.md",
+            linkLabel: "Open policy",
           },
           privacy: {
             eyebrow: "Privacy",

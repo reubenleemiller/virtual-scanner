@@ -11,6 +11,25 @@ It is aimed at a Windows 11 ARM64 VM running in UTM.
 Virtual Scanner is open source under the MIT License. See `LICENSE` for the
 full license text and `NOTICE` for project notices.
 
+## Code signing policy
+
+Virtual Scanner is applying for open-source code signing through SignPath
+Foundation. Pending approval, the project will use:
+
+> Free code signing provided by SignPath.io, certificate by SignPath Foundation
+
+Release signing is restricted to artifacts built from this public repository by
+the CI release workflow. Current signing roles are:
+
+| Role | Members |
+| --- | --- |
+| Author | Reuben Miller |
+| Reviewer | Reuben Miller |
+| Approver | Reuben Miller |
+
+Maintainers with repository or signing access must use multi-factor
+authentication. See `CODE_SIGNING_POLICY.md` for the full policy.
+
 ## Important architecture note
 
 TWAIN data sources are loaded into the scanner application process, so the
