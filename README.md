@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 This project builds a small virtual TWAIN data source without Visual Studio.
-It is aimed at a Windows 11 ARM64 VM running in UTM.
+It is designed for Windows 11 ARM64 and emulated x86/x64 TWAIN applications.
 
 ## License
 
@@ -47,7 +47,7 @@ The DSM discovers data sources by loading `.ds` files from the TWAIN folders.
 
 ## Build without Visual Studio
 
-Recommended: build inside the Windows VM with MSYS2 UCRT64.
+Recommended: build on Windows with MSYS2 UCRT64.
 
 1. Install MSYS2 from <https://www.msys2.org/>.
 2. Open the "MSYS2 UCRT64" shell.
@@ -78,7 +78,7 @@ make CC=clang TARGET=aarch64-w64-windows-gnu
 You will still need a native ARM64 `twaindsm.dll` and a native ARM64 TWAIN app
 to use that build.
 
-## Install in the VM
+## Install on Windows
 
 Run PowerShell as Administrator:
 
@@ -91,17 +91,14 @@ not already ship it. Use the 64-bit/x64 build of the DSM for x64 apps.
 
 ## Test
 
-Use ExamView Test Manager or a TWAIN test app such as TWACKER.
+Use a TWAIN-compatible scanning application or a TWAIN test app such as TWACKER.
 
 Expected behavior:
 
 1. The source list contains `Virtual Scanner`.
 2. If the scanner inbox is empty, the `Virtual Scanner Inbox` helper opens.
 3. Add PNG/JPG/TIFF/PDF files in the helper, then click `Scan`.
-4. ExamView receives the queued pages through TWAIN.
-
-For ExamView on Windows 11 ARM64, the `x86` installer is usually the right one
-because ExamView is normally a 32-bit application.
+4. The TWAIN application receives the queued pages.
 
 ## Build and release from CI
 
@@ -113,8 +110,8 @@ Every push to `main` and every pull request runs the CI build and uploads the
 generated files as workflow artifacts. To publish a release, push a version tag:
 
 ```sh
-git tag v1.5.2
-git push origin v1.5.2
+git tag v1.5.3
+git push origin v1.5.3
 ```
 
 The tag build creates a GitHub Release and attaches the generated installers and
@@ -284,7 +281,7 @@ Run this from the project folder on your Mac:
 ```sh
 cd "$HOME/Documents/virtual-scanner"
 
-VERSION="1.5.2"
+VERSION="1.5.3"
 gcloud builds submit . \
   --config cloudbuild.yaml \
   --substitutions "_ARTIFACT_BUCKET=${BUCKET},_VERSION=${VERSION}"
@@ -300,7 +297,7 @@ export SIGN_CERT_PASSWORD="CERTIFICATE_PASSWORD"
 export SIGN_NAME="Reuben Miller"
 export SIGN_DESCRIPTION="Virtual Scanner"
 
-VERSION="1.5.2" scripts/build-installer.sh
+VERSION="1.5.3" scripts/build-installer.sh
 ```
 
 CI builds can set `SIGN_CERT_BASE64` instead of `SIGN_CERT_PATH`; the build
@@ -333,10 +330,9 @@ Cloud Build stores the artifacts here:
 gs://BUCKET/virtual-scanner/BUILD_ID/
 ```
 
-### 6. Download the ExamView installer
+### 6. Download the installer
 
-ExamView is usually a 32-bit application, even inside Windows 11 ARM64. For
-that setup, download the x86 installer:
+For a 32-bit TWAIN application on Windows 11 ARM64, download the x86 installer:
 
 ```sh
 gcloud storage cp \
@@ -344,36 +340,35 @@ gcloud storage cp \
   .
 ```
 
-Copy this file into the Windows 11 ARM64 VM and run it as Administrator:
+Copy this file to the Windows computer and run it as Administrator:
 
 ```text
-VirtualScanner-1.5.2-x86-setup.exe
+VirtualScanner-1.5.3-x86-setup.exe
 ```
 
-Use `x86` if ExamView is installed under `C:\Program Files (x86)`. Use `x64`
-if the TWAIN app is a 64-bit Intel app. Use `arm64` only for a native ARM64
-TWAIN app.
+Use `x86` if the TWAIN application is installed under
+`C:\Program Files (x86)`. Use `x64` if the TWAIN app is a 64-bit Intel app.
+Use `arm64` only for a native ARM64 TWAIN app.
 
 Other generated files are also available:
 
 ```text
-VirtualScanner-1.5.2-arm64-setup.exe
-VirtualScanner-1.5.2-x64-setup.exe
-VirtualScanner-1.5.2-x86-setup.exe
-VirtualScanner-1.5.2-arm64-portable.zip
-VirtualScanner-1.5.2-x64-portable.zip
-VirtualScanner-1.5.2-x86-portable.zip
+VirtualScanner-1.5.3-arm64-setup.exe
+VirtualScanner-1.5.3-x64-setup.exe
+VirtualScanner-1.5.3-x86-setup.exe
+VirtualScanner-1.5.3-arm64-portable.zip
+VirtualScanner-1.5.3-x64-portable.zip
+VirtualScanner-1.5.3-x86-portable.zip
 ```
 
-The portable ZIP avoids the installer executable. Extract it in the VM, open
+The portable ZIP avoids the installer executable. Extract it on Windows, open
 PowerShell as Administrator in that extracted folder, and run:
 
 ```powershell
 .\install-portable.ps1 -Arch x86
 ```
 
-Run either the installer or the portable installer as Administrator inside the
-Windows 11 ARM64 VM.
+Run either the installer or the portable installer as Administrator.
 
 The installer also adds a desktop and Start Menu shortcut:
 
@@ -384,9 +379,9 @@ Virtual Scanner Inbox
 Use that small app to add PNG/JPG/TIFF/PDF files to the scanner inbox without
 opening the folder manually.
 
-If ExamView starts a scan while the inbox is empty, the scanner launches this
-helper app and keeps the TWAIN session open. Add files, then click
-`Scan` in the helper app; ExamView will continue the scan.
+If a TWAIN application starts a scan while the inbox is empty, the scanner
+launches this helper app and keeps the TWAIN session open. Add files, then
+click `Scan` in the helper app; the TWAIN application will continue the scan.
 
 ## Folder Scanner Mode
 
@@ -396,14 +391,14 @@ The installer creates this inbox:
 C:\Users\Public\Documents\VirtualScannerInbox
 ```
 
-Put image files there before scanning in ExamView. Supported formats are:
+Put image files there before scanning. Supported formats are:
 
 ```text
 PNG, JPG, JPEG, BMP, TIF, TIFF
 ```
 
-When ExamView scans, the TWAIN source imports the first supported image
-alphabetically. After ExamView completes the transfer, that file is moved to:
+When scanning starts, the TWAIN source imports the first supported image
+alphabetically. After the transfer completes, that file is moved to:
 
 ```text
 C:\Users\Public\Documents\VirtualScannerInbox\Scanned\yyyyMMdd-HHmmss-fff
@@ -428,7 +423,7 @@ Then place a PDF in the inbox. If no image files are waiting, the scanner will
 render the first PDF alphabetically into 300 DPI PNG pages, move the PDF to
 the current timestamped `Scanned` folder, and feed the generated PNG pages in
 order. Those generated PNG pages are also moved into that same timestamped
-folder as ExamView consumes them.
+folder as the TWAIN application consumes them.
 
 If Ghostscript is installed somewhere unusual, set:
 
@@ -440,4 +435,4 @@ If Ghostscript is installed somewhere unusual, set:
 )
 ```
 
-Restart ExamView after changing that environment variable.
+Restart the TWAIN application after changing that environment variable.
