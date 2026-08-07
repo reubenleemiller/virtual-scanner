@@ -107,6 +107,10 @@ bundle_vcredist() {
     mkdir -p "dist/vcredist-${arch}"
     printf 'Downloading VC++ redistributable for %s from %s\n' "${arch}" "${url}"
     curl -fL \
+        --retry 5 \
+        --retry-delay 3 \
+        --retry-connrefused \
+        --retry-all-errors \
         -H "User-Agent: VirtualScannerBuilder" \
         "${url}" \
         -o "dist/vcredist-${arch}/vc_redist.exe"

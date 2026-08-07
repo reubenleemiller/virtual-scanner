@@ -28,6 +28,10 @@ extract_dir="${work_dir}/extract"
 mkdir -p "${extract_dir}"
 
 curl -fsSL \
+    --retry 5 \
+    --retry-delay 3 \
+    --retry-connrefused \
+    --retry-all-errors \
     -H "Accept: application/vnd.github+json" \
     -H "User-Agent: VirtualScannerBuilder" \
     "${api_url}" \
@@ -54,6 +58,10 @@ PY
 
 printf 'Downloading Ghostscript %s from %s\n' "${flavor}" "${download_url}"
 curl -fL \
+    --retry 5 \
+    --retry-delay 3 \
+    --retry-connrefused \
+    --retry-all-errors \
     -H "User-Agent: VirtualScannerBuilder" \
     "${download_url}" \
     -o "${installer}"
