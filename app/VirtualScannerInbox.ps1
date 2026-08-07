@@ -10,15 +10,27 @@ try {
 
 $script:SupportedExtensions = @(".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff", ".pdf")
 $script:ReadyFiles = @()
+$script:InboxPath = $null
 
 function Get-InboxPath {
     $path = [Environment]::GetEnvironmentVariable("VIRTUAL_SCANNER_INBOX", "Machine")
     if ([string]::IsNullOrWhiteSpace($path)) {
         $path = Join-Path $env:PUBLIC "Documents\VirtualScannerInbox"
     }
+
     New-Item -ItemType Directory -Force -Path $path | Out-Null
     New-Item -ItemType Directory -Force -Path (Join-Path $path "Scanned") | Out-Null
     return $path
+}
+
+function Get-AppIconPath {
+    if ($PSScriptRoot) {
+        $path = Join-Path $PSScriptRoot "VirtualScanner.ico"
+        if (Test-Path -LiteralPath $path) {
+            return $path
+        }
+    }
+    return $null
 }
 
 function Test-SupportedFile {
@@ -80,13 +92,12 @@ function Set-Status {
 }
 
 function Refresh-List {
-    $selected = @{}
+    $selectedPaths = @{}
     foreach ($item in $list.SelectedItems) {
-        $selected[$item.Text] = $true
+        $selectedPaths[$item.Tag] = $true
     }
 
     $script:ReadyFiles = Get-ReadyFiles
-
     $list.BeginUpdate()
     try {
         $list.Items.Clear()
@@ -95,7 +106,7 @@ function Refresh-List {
             [void]$item.SubItems.Add((Format-FileSize -Bytes $file.Length))
             [void]$item.SubItems.Add($file.LastWriteTime.ToString("g"))
             $item.Tag = $file.FullName
-            if ($selected.ContainsKey($file.Name)) {
+            if ($selectedPaths.ContainsKey($file.FullName)) {
                 $item.Selected = $true
             }
             [void]$list.Items.Add($item)
@@ -107,33 +118,33 @@ function Refresh-List {
     $count = $script:ReadyFiles.Count
     $scanButton.Enabled = $count -gt 0
     $clearButton.Enabled = $count -gt 0
-    if ($dropLabel -and $list) {
-        $dropLabel.Visible = $count -eq 0
-        $list.Visible = $count -gt 0
-    }
-    if ($count -eq 0) {
-        Set-Status "Drop files here or choose Add Files."
-    } elseif ($count -eq 1) {
-        Set-Status "1 file ready to scan."
-    } else {
-        Set-Status "$count files ready to scan in name order."
-    }
-}
+    $removeButton.Enabled = $list.SelectedItems.Count -gt 0
 
-function Queue-Refresh {
-    $refreshTimer.Stop()
-    $refreshTimer.Start()
+    if ($count -eq 0) {
+        Set-Status "No files queued. Add or drop PNG, JPG, TIFF, BMP, or PDF files."
+    } elseif ($count -eq 1) {
+        Set-Status "1 file queued."
+    } else {
+        Set-Status "$count files queued in name order."
+    }
 }
 
 function Add-Files {
     param([string[]]$Paths)
 
     $added = 0
-    foreach ($path in $Paths) {
-        if ((Test-Path -LiteralPath $path -PathType Leaf) -and
-            (Copy-WithUniqueName -Source $path -DestinationFolder $script:InboxPath)) {
-            $added++
+    $form.UseWaitCursor = $true
+    $addButton.Enabled = $false
+    try {
+        foreach ($path in $Paths) {
+            if ((Test-Path -LiteralPath $path -PathType Leaf) -and
+                (Copy-WithUniqueName -Source $path -DestinationFolder $script:InboxPath)) {
+                $added++
+            }
         }
+    } finally {
+        $addButton.Enabled = $true
+        $form.UseWaitCursor = $false
     }
 
     Refresh-List
@@ -151,58 +162,123 @@ function Signal-ScanReady {
     [IO.File]::WriteAllText($signalPath, (Get-Date -Format "o"), [Text.Encoding]::ASCII)
 }
 
-function Open-SelectedOrInbox {
+function Open-Inbox {
+    Start-Process explorer.exe "`"$script:InboxPath`""
+}
+
+function Open-SelectedFile {
     if ($list.SelectedItems.Count -gt 0) {
         Start-Process explorer.exe "/select,`"$($list.SelectedItems[0].Tag)`""
     } else {
-        Start-Process explorer.exe "`"$script:InboxPath`""
+        Open-Inbox
     }
 }
 
+function Remove-SelectedFiles {
+    foreach ($item in @($list.SelectedItems)) {
+        if (Test-Path -LiteralPath $item.Tag -PathType Leaf) {
+            Remove-Item -LiteralPath $item.Tag -Force
+        }
+    }
+    Refresh-List
+}
+
+function Add-RowStyle {
+    param(
+        [Parameter(Mandatory = $true)][Windows.Forms.TableLayoutPanel]$Panel,
+        [Parameter(Mandatory = $true)][Windows.Forms.SizeType]$SizeType,
+        [Parameter(Mandatory = $true)][single]$Height
+    )
+    $style = New-Object Windows.Forms.RowStyle
+    $style.SizeType = $SizeType
+    $style.Height = $Height
+    [void]$Panel.RowStyles.Add($style)
+}
+
+function Add-ColumnStyle {
+    param(
+        [Parameter(Mandatory = $true)][Windows.Forms.TableLayoutPanel]$Panel,
+        [Parameter(Mandatory = $true)][Windows.Forms.SizeType]$SizeType,
+        [Parameter(Mandatory = $true)][single]$Width
+    )
+    $style = New-Object Windows.Forms.ColumnStyle
+    $style.SizeType = $SizeType
+    $style.Width = $Width
+    [void]$Panel.ColumnStyles.Add($style)
+}
+
 $script:InboxPath = Get-InboxPath
+$iconPath = Get-AppIconPath
+$appIcon = $null
 
 [Windows.Forms.Application]::EnableVisualStyles()
 
 $form = New-Object Windows.Forms.Form
 $form.Text = "Virtual Scanner Inbox"
-$form.Icon = [Drawing.SystemIcons]::Application
-$form.Size = New-Object Drawing.Size(760, 500)
+$form.Size = New-Object Drawing.Size(760, 520)
 $form.StartPosition = "CenterScreen"
-$form.MinimumSize = New-Object Drawing.Size(640, 420)
+$form.MinimumSize = New-Object Drawing.Size(660, 440)
 $form.BackColor = [Drawing.Color]::FromArgb(246, 248, 251)
 $form.Font = New-Object Drawing.Font("Segoe UI", 9)
 $form.AllowDrop = $true
+$form.KeyPreview = $true
+if ($iconPath) {
+    $appIcon = New-Object Drawing.Icon($iconPath)
+    $form.Icon = $appIcon
+} else {
+    $form.Icon = [Drawing.SystemIcons]::Application
+}
+
+$layout = New-Object Windows.Forms.TableLayoutPanel
+$layout.Dock = [Windows.Forms.DockStyle]::Fill
+$layout.ColumnCount = 1
+$layout.RowCount = 5
+$layout.BackColor = $form.BackColor
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 76
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 52
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 48
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Percent) -Height 100
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 38
+$form.Controls.Add($layout)
 
 $header = New-Object Windows.Forms.Panel
-$header.Dock = [Windows.Forms.DockStyle]::Top
-$header.Height = 98
-$header.BackColor = [Drawing.Color]::FromArgb(29, 78, 216)
-$form.Controls.Add($header)
+$header.Dock = [Windows.Forms.DockStyle]::Fill
+$header.BackColor = [Drawing.Color]::FromArgb(30, 64, 175)
+$layout.Controls.Add($header, 0, 0)
+
+if ($appIcon) {
+    $iconBox = New-Object Windows.Forms.PictureBox
+    $iconBox.Image = $appIcon.ToBitmap()
+    $iconBox.SizeMode = [Windows.Forms.PictureBoxSizeMode]::StretchImage
+    $iconBox.Size = New-Object Drawing.Size(40, 40)
+    $iconBox.Location = New-Object Drawing.Point(20, 18)
+    $header.Controls.Add($iconBox)
+}
 
 $titleLabel = New-Object Windows.Forms.Label
 $titleLabel.Text = "Virtual Scanner Inbox"
 $titleLabel.ForeColor = [Drawing.Color]::White
-$titleLabel.Font = New-Object Drawing.Font("Segoe UI Semibold", 16)
+$titleLabel.Font = New-Object Drawing.Font("Segoe UI Semibold", 15)
 $titleLabel.AutoSize = $true
-$titleLabel.Location = New-Object Drawing.Point(22, 16)
+$titleLabel.Location = New-Object Drawing.Point(74, 14)
 $header.Controls.Add($titleLabel)
 
 $subtitleLabel = New-Object Windows.Forms.Label
-$subtitleLabel.Text = "Add images or PDFs, then start the scan."
+$subtitleLabel.Text = "Queue files for your next scan."
 $subtitleLabel.ForeColor = [Drawing.Color]::FromArgb(219, 234, 254)
 $subtitleLabel.AutoSize = $true
-$subtitleLabel.Location = New-Object Drawing.Point(24, 50)
+$subtitleLabel.Location = New-Object Drawing.Point(76, 43)
 $header.Controls.Add($subtitleLabel)
 
 $scanButton = New-Object Windows.Forms.Button
 $scanButton.Text = "Scan"
 $scanButton.Font = New-Object Drawing.Font("Segoe UI Semibold", 10)
-$scanButton.Size = New-Object Drawing.Size(132, 40)
+$scanButton.Size = New-Object Drawing.Size(118, 36)
 $scanButton.Anchor = [Windows.Forms.AnchorStyles]::Top -bor [Windows.Forms.AnchorStyles]::Right
-$scanButton.Location = New-Object Drawing.Point(602, 28)
+$scanButton.Location = New-Object Drawing.Point(620, 20)
 $scanButton.FlatStyle = [Windows.Forms.FlatStyle]::Flat
 $scanButton.BackColor = [Drawing.Color]::White
-$scanButton.ForeColor = [Drawing.Color]::FromArgb(29, 78, 216)
+$scanButton.ForeColor = [Drawing.Color]::FromArgb(30, 64, 175)
 $scanButton.FlatAppearance.BorderSize = 0
 $scanButton.Add_Click({
     Refresh-List
@@ -219,34 +295,37 @@ $scanButton.Add_Click({
 })
 $header.Controls.Add($scanButton)
 
-$pathPanel = New-Object Windows.Forms.Panel
-$pathPanel.Dock = [Windows.Forms.DockStyle]::Top
-$pathPanel.Height = 58
-$pathPanel.Padding = New-Object Windows.Forms.Padding(18, 14, 18, 10)
+$pathPanel = New-Object Windows.Forms.TableLayoutPanel
+$pathPanel.Dock = [Windows.Forms.DockStyle]::Fill
+$pathPanel.ColumnCount = 2
+$pathPanel.RowCount = 1
+$pathPanel.Padding = New-Object Windows.Forms.Padding(18, 11, 18, 8)
 $pathPanel.BackColor = $form.BackColor
-$form.Controls.Add($pathPanel)
+[void]$pathPanel.ColumnStyles.Clear()
+Add-ColumnStyle -Panel $pathPanel -SizeType ([Windows.Forms.SizeType]::Percent) -Width 100
+Add-ColumnStyle -Panel $pathPanel -SizeType ([Windows.Forms.SizeType]::Absolute) -Width 94
+$layout.Controls.Add($pathPanel, 0, 1)
 
 $pathBox = New-Object Windows.Forms.TextBox
 $pathBox.Dock = [Windows.Forms.DockStyle]::Fill
 $pathBox.ReadOnly = $true
 $pathBox.BorderStyle = [Windows.Forms.BorderStyle]::FixedSingle
 $pathBox.Text = $script:InboxPath
-$pathPanel.Controls.Add($pathBox)
+$pathPanel.Controls.Add($pathBox, 0, 0)
 
 $openButton = New-Object Windows.Forms.Button
 $openButton.Text = "Open"
-$openButton.Dock = [Windows.Forms.DockStyle]::Right
-$openButton.Width = 86
+$openButton.Dock = [Windows.Forms.DockStyle]::Fill
 $openButton.Margin = New-Object Windows.Forms.Padding(8, 0, 0, 0)
-$openButton.Add_Click({ Open-SelectedOrInbox })
-$pathPanel.Controls.Add($openButton)
+$openButton.Add_Click({ Open-Inbox })
+$pathPanel.Controls.Add($openButton, 1, 0)
 
 $toolbar = New-Object Windows.Forms.FlowLayoutPanel
-$toolbar.Dock = [Windows.Forms.DockStyle]::Top
-$toolbar.Height = 48
-$toolbar.Padding = New-Object Windows.Forms.Padding(14, 4, 14, 6)
+$toolbar.Dock = [Windows.Forms.DockStyle]::Fill
+$toolbar.Padding = New-Object Windows.Forms.Padding(14, 5, 14, 5)
 $toolbar.BackColor = $form.BackColor
-$form.Controls.Add($toolbar)
+$toolbar.WrapContents = $false
+$layout.Controls.Add($toolbar, 0, 2)
 
 $addButton = New-Object Windows.Forms.Button
 $addButton.Text = "Add Files..."
@@ -256,7 +335,7 @@ $addButton.Add_Click({
     $dialog.Title = "Add scanner files"
     $dialog.Filter = "Scanner files|*.png;*.jpg;*.jpeg;*.bmp;*.tif;*.tiff;*.pdf|All files|*.*"
     $dialog.Multiselect = $true
-    if ($dialog.ShowDialog() -eq [Windows.Forms.DialogResult]::OK) {
+    if ($dialog.ShowDialog($form) -eq [Windows.Forms.DialogResult]::OK) {
         Add-Files -Paths $dialog.FileNames
     }
 })
@@ -271,12 +350,7 @@ $refreshButton.Add_Click({ Refresh-List })
 $removeButton = New-Object Windows.Forms.Button
 $removeButton.Text = "Remove"
 $removeButton.Size = New-Object Drawing.Size(92, 32)
-$removeButton.Add_Click({
-    foreach ($item in @($list.SelectedItems)) {
-        Remove-Item -LiteralPath $item.Tag -Force
-    }
-    Refresh-List
-})
+$removeButton.Add_Click({ Remove-SelectedFiles })
 [void]$toolbar.Controls.Add($removeButton)
 
 $clearButton = New-Object Windows.Forms.Button
@@ -284,13 +358,15 @@ $clearButton.Text = "Clear All"
 $clearButton.Size = New-Object Drawing.Size(92, 32)
 $clearButton.Add_Click({
     $confirm = [Windows.Forms.MessageBox]::Show(
-        "Remove all ready-to-scan files from the inbox?",
-        "Clear ready files",
+        "Remove all queued files from the inbox?",
+        "Clear queued files",
         [Windows.Forms.MessageBoxButtons]::YesNo,
         [Windows.Forms.MessageBoxIcon]::Question)
     if ($confirm -eq [Windows.Forms.DialogResult]::Yes) {
         foreach ($file in $script:ReadyFiles) {
-            Remove-Item -LiteralPath $file.FullName -Force
+            if (Test-Path -LiteralPath $file.FullName -PathType Leaf) {
+                Remove-Item -LiteralPath $file.FullName -Force
+            }
         }
         Refresh-List
     }
@@ -303,11 +379,11 @@ $openScannedButton.Size = New-Object Drawing.Size(92, 32)
 $openScannedButton.Add_Click({ Start-Process explorer.exe "`"$(Join-Path $script:InboxPath "Scanned")`"" })
 [void]$toolbar.Controls.Add($openScannedButton)
 
-$content = New-Object Windows.Forms.Panel
-$content.Dock = [Windows.Forms.DockStyle]::Fill
-$content.Padding = New-Object Windows.Forms.Padding(18, 0, 18, 0)
-$content.BackColor = $form.BackColor
-$form.Controls.Add($content)
+$listPanel = New-Object Windows.Forms.Panel
+$listPanel.Dock = [Windows.Forms.DockStyle]::Fill
+$listPanel.Padding = New-Object Windows.Forms.Padding(18, 0, 18, 0)
+$listPanel.BackColor = $form.BackColor
+$layout.Controls.Add($listPanel, 0, 3)
 
 $list = New-Object Windows.Forms.ListView
 $list.Dock = [Windows.Forms.DockStyle]::Fill
@@ -319,55 +395,23 @@ $list.MultiSelect = $true
 $list.AllowDrop = $true
 $list.BackColor = [Drawing.Color]::White
 $list.BorderStyle = [Windows.Forms.BorderStyle]::FixedSingle
-[void]$list.Columns.Add("Name", 380)
-[void]$list.Columns.Add("Size", 90)
+[void]$list.Columns.Add("Name", 430)
+[void]$list.Columns.Add("Size", 100)
 [void]$list.Columns.Add("Modified", 180)
-$list.Add_DoubleClick({ Open-SelectedOrInbox })
+$list.Add_DoubleClick({ Open-SelectedFile })
 $list.Add_SelectedIndexChanged({ $removeButton.Enabled = $list.SelectedItems.Count -gt 0 })
-$content.Controls.Add($list)
-
-$dropLabel = New-Object Windows.Forms.Label
-$dropLabel.Text = "Drop PNG, JPG, TIFF, BMP, or PDF files here"
-$dropLabel.Dock = [Windows.Forms.DockStyle]::Fill
-$dropLabel.TextAlign = [Drawing.ContentAlignment]::MiddleCenter
-$dropLabel.ForeColor = [Drawing.Color]::FromArgb(100, 116, 139)
-$dropLabel.BackColor = [Drawing.Color]::White
-$dropLabel.Visible = $false
-$content.Controls.Add($dropLabel)
+$listPanel.Controls.Add($list)
 
 $statusPanel = New-Object Windows.Forms.Panel
-$statusPanel.Dock = [Windows.Forms.DockStyle]::Bottom
-$statusPanel.Height = 40
-$statusPanel.Padding = New-Object Windows.Forms.Padding(18, 8, 18, 8)
+$statusPanel.Dock = [Windows.Forms.DockStyle]::Fill
+$statusPanel.Padding = New-Object Windows.Forms.Padding(18, 7, 18, 6)
 $statusPanel.BackColor = $form.BackColor
-$form.Controls.Add($statusPanel)
+$layout.Controls.Add($statusPanel, 0, 4)
 
 $statusLabel = New-Object Windows.Forms.Label
 $statusLabel.Dock = [Windows.Forms.DockStyle]::Fill
 $statusLabel.ForeColor = [Drawing.Color]::FromArgb(51, 65, 85)
 $statusPanel.Controls.Add($statusLabel)
-
-$refreshTimer = New-Object Windows.Forms.Timer
-$refreshTimer.Interval = 250
-$refreshTimer.Add_Tick({
-    $refreshTimer.Stop()
-    Refresh-List
-})
-
-$watcher = New-Object IO.FileSystemWatcher
-$watcher.Path = $script:InboxPath
-$watcher.IncludeSubdirectories = $false
-$watcher.EnableRaisingEvents = $true
-$watcher.NotifyFilter = [IO.NotifyFilters]"FileName, LastWrite, Size"
-$queueRefreshOnUi = {
-    if ($form -and -not $form.IsDisposed) {
-        [void]$form.BeginInvoke([Action]{ Queue-Refresh })
-    }
-}
-$watcher.Add_Created($queueRefreshOnUi)
-$watcher.Add_Deleted($queueRefreshOnUi)
-$watcher.Add_Renamed($queueRefreshOnUi)
-$watcher.Add_Changed($queueRefreshOnUi)
 
 $dragHandler = {
     if ($_.Data.GetDataPresent([Windows.Forms.DataFormats]::FileDrop)) {
@@ -384,25 +428,19 @@ $form.Add_DragEnter($dragHandler)
 $form.Add_DragDrop($dropHandler)
 $list.Add_DragEnter($dragHandler)
 $list.Add_DragDrop($dropHandler)
-$dropLabel.Add_DragEnter($dragHandler)
-$dropLabel.Add_DragDrop($dropHandler)
 
 $form.Add_KeyDown({
     if ($_.KeyCode -eq [Windows.Forms.Keys]::F5) {
         Refresh-List
     } elseif ($_.KeyCode -eq [Windows.Forms.Keys]::Delete -and $list.SelectedItems.Count -gt 0) {
-        foreach ($item in @($list.SelectedItems)) {
-            Remove-Item -LiteralPath $item.Tag -Force
-        }
-        Refresh-List
+        Remove-SelectedFiles
     } elseif ($_.Control -and $_.KeyCode -eq [Windows.Forms.Keys]::O) {
-        Open-SelectedOrInbox
+        Open-Inbox
     }
 })
-$form.KeyPreview = $true
 
 $form.Add_Resize({
-    $scanButton.Left = $header.ClientSize.Width - $scanButton.Width - 26
+    $scanButton.Left = [Math]::Max(520, $header.ClientSize.Width - $scanButton.Width - 22)
 })
 
 $form.Add_Shown({
@@ -414,8 +452,4 @@ try {
     [void]$form.ShowDialog()
 } catch {
     [Windows.Forms.MessageBox]::Show($_.Exception.Message, "Virtual Scanner Inbox Error")
-} finally {
-    if ($watcher) {
-        $watcher.Dispose()
-    }
 }

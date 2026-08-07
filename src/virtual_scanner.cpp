@@ -854,16 +854,6 @@ static bool select_next_page()
     clear_scan_signal();
     g_waiting_for_scan_signal = 0;
     g_current_file = files.front();
-    HGLOBAL probe = nullptr;
-    PageInfo info = {FALLBACK_PAGE_WIDTH, FALLBACK_PAGE_HEIGHT};
-    if (load_image_as_dib(g_current_file, &probe, &info)) {
-        GlobalFree(probe);
-        g_current_page = info;
-        g_pending_images = 1;
-        return true;
-    }
-
-    g_current_file.clear();
     g_current_page = {FALLBACK_PAGE_WIDTH, FALLBACK_PAGE_HEIGHT};
     g_pending_images = 1;
     return true;
