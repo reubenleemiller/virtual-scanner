@@ -130,6 +130,7 @@ build_inbox() {
         -o "build/${arch}/VirtualScannerInbox.exe" \
         "app/VirtualScannerInbox.cpp" \
         "build/${arch}/VirtualScannerInbox.res" \
+        -static -static-libgcc -static-libstdc++ \
         -lcomdlg32 -lshell32 -lole32 -lgdi32 -luser32
     sign_file "build/${arch}/VirtualScannerInbox.exe"
 }
