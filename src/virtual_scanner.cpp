@@ -1181,6 +1181,7 @@ static TW_UINT16 handle_pendingxfers(TW_UINT16 MSG, TW_MEMREF pData)
         }
         if (g_pending_images == 0) {
             archive_current_file();
+            select_next_page();
         }
         pending->Count = g_pending_images;
         pending->EOJ = 0;
