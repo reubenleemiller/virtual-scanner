@@ -40,3 +40,7 @@ https://github.com/ArtifexSoftware/ghostpdl-downloads
 Virtual Scanner does not modify Ghostscript. The bundled Ghostscript files are
 installed under the Virtual Scanner installation folder and used only for local
 PDF conversion.
+
+This installer also includes the Microsoft Visual C++ Redistributable installer
+needed by the bundled Ghostscript executable. It is installed silently during
+setup when Windows needs the runtime libraries.

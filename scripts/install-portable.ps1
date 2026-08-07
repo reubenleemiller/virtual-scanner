@@ -28,6 +28,10 @@ Copy-Item $sourceDs (Join-Path $installDir "VirtualScanner.ds") -Force
 Copy-Item (Join-Path $sourceRoot "VirtualScannerInbox.ps1") (Join-Path $installDir "VirtualScannerInbox.ps1") -Force
 Copy-Item (Join-Path $sourceRoot "VirtualScannerInbox.vbs") (Join-Path $installDir "VirtualScannerInbox.vbs") -Force
 Copy-Item (Join-Path $sourceRoot "VirtualScanner.ico") (Join-Path $installDir "VirtualScanner.ico") -Force
+$iconPng = Join-Path $sourceRoot "VirtualScanner-icon.png"
+if (Test-Path $iconPng) {
+    Copy-Item $iconPng (Join-Path $installDir "VirtualScanner-icon.png") -Force
+}
 
 [Environment]::SetEnvironmentVariable("VIRTUAL_SCANNER_INBOX", $inbox, "Machine")
 
@@ -51,4 +55,3 @@ foreach ($shortcutPath in @(
 
 Write-Host "Installed Virtual Scanner $Arch to $installDir"
 Write-Host "Inbox: $inbox"
-

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="${VERSION:-1.5.2}"
+VERSION="${VERSION:-1.5.3}"
 SIGN_NAME="${SIGN_NAME:-Reuben Miller}"
 SIGN_DESCRIPTION="${SIGN_DESCRIPTION:-Virtual Scanner}"
 SIGN_TIMESTAMP_URL="${SIGN_TIMESTAMP_URL:-http://timestamp.digicert.com}"
@@ -82,6 +82,36 @@ bundle_ghostscript() {
     bash scripts/bundle-ghostscript.sh "${flavor}" "dist/ghostscript-${arch}"
 }
 
+bundle_vcredist() {
+    local arch="$1"
+    local url="https://aka.ms/vs/17/release/vc_redist.x64.exe"
+
+    case "${arch}" in
+        x86)
+            url="https://aka.ms/vs/17/release/vc_redist.x86.exe"
+            ;;
+        x64)
+            url="https://aka.ms/vs/17/release/vc_redist.x64.exe"
+            ;;
+        arm64)
+            # The bundled Ghostscript executable for ARM64 installs is gswin64c.exe,
+            # which runs under x64 emulation and needs the x64 VC++ runtime.
+            url="https://aka.ms/vs/17/release/vc_redist.x64.exe"
+            ;;
+        *)
+            printf 'Unsupported VC++ redistributable architecture: %s\n' "${arch}" >&2
+            exit 2
+            ;;
+    esac
+
+    mkdir -p "dist/vcredist-${arch}"
+    printf 'Downloading VC++ redistributable for %s from %s\n' "${arch}" "${url}"
+    curl -fL \
+        -H "User-Agent: VirtualScannerBuilder" \
+        "${url}" \
+        -o "dist/vcredist-${arch}/vc_redist.exe"
+}
+
 rm -rf dist
 mkdir -p dist
 decode_signing_certificate
@@ -92,11 +122,12 @@ mkdir -p dist/x64
 cp build/x64/VirtualScanner.ds dist/x64/VirtualScanner.ds
 sign_file "dist/x64/VirtualScanner.ds"
 bundle_ghostscript x64
+bundle_vcredist x64
 makensis -V2 -DVERSION="${VERSION}" -DARCH=x64 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-x64-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-x64.zip" "dist/VirtualScanner-${VERSION}-x64-setup.exe"
 mkdir -p "dist/portable-x64"
-cp build/x64/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico scripts/install-portable.ps1 "dist/portable-x64/"
+cp build/x64/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico app/VirtualScanner-icon.png scripts/install-portable.ps1 "dist/portable-x64/"
 sign_file "dist/portable-x64/VirtualScanner.ds"
 zip -j "dist/VirtualScanner-${VERSION}-x64-portable.zip" dist/portable-x64/*
 
@@ -105,11 +136,12 @@ mkdir -p dist/x86
 cp build/x86/VirtualScanner.ds dist/x86/VirtualScanner.ds
 sign_file "dist/x86/VirtualScanner.ds"
 bundle_ghostscript x86
+bundle_vcredist x86
 makensis -V2 -DVERSION="${VERSION}" -DARCH=x86 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-x86-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-x86.zip" "dist/VirtualScanner-${VERSION}-x86-setup.exe"
 mkdir -p "dist/portable-x86"
-cp build/x86/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico scripts/install-portable.ps1 "dist/portable-x86/"
+cp build/x86/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico app/VirtualScanner-icon.png scripts/install-portable.ps1 "dist/portable-x86/"
 sign_file "dist/portable-x86/VirtualScanner.ds"
 zip -j "dist/VirtualScanner-${VERSION}-x86-portable.zip" dist/portable-x86/*
 
@@ -118,11 +150,12 @@ mkdir -p dist/arm64
 cp build/arm64/VirtualScanner.ds dist/arm64/VirtualScanner.ds
 sign_file "dist/arm64/VirtualScanner.ds"
 bundle_ghostscript arm64
+bundle_vcredist arm64
 makensis -V2 -DVERSION="${VERSION}" -DARCH=arm64 -DSOURCE_DIR="$(pwd)" installer/VirtualScanner.nsi
 sign_file "dist/VirtualScanner-${VERSION}-arm64-setup.exe"
 zip -j "dist/VirtualScanner-${VERSION}-arm64.zip" "dist/VirtualScanner-${VERSION}-arm64-setup.exe"
 mkdir -p "dist/portable-arm64"
-cp build/arm64/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico scripts/install-portable.ps1 "dist/portable-arm64/"
+cp build/arm64/VirtualScanner.ds app/VirtualScannerInbox.ps1 app/VirtualScannerInbox.vbs app/VirtualScanner.ico app/VirtualScanner-icon.png scripts/install-portable.ps1 "dist/portable-arm64/"
 sign_file "dist/portable-arm64/VirtualScanner.ds"
 zip -j "dist/VirtualScanner-${VERSION}-arm64-portable.zip" dist/portable-arm64/*
 

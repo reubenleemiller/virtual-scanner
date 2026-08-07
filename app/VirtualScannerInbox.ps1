@@ -33,6 +33,16 @@ function Get-AppIconPath {
     return $null
 }
 
+function Get-AppImagePath {
+    if ($PSScriptRoot) {
+        $path = Join-Path $PSScriptRoot "VirtualScanner-icon.png"
+        if (Test-Path -LiteralPath $path) {
+            return $path
+        }
+    }
+    return $null
+}
+
 function Test-SupportedFile {
     param([Parameter(Mandatory = $true)][string]$Path)
     return $script:SupportedExtensions -contains ([IO.Path]::GetExtension($Path).ToLowerInvariant())
@@ -115,6 +125,8 @@ function Refresh-List {
         $list.EndUpdate()
     }
 
+    Resize-ListColumns
+
     $count = $script:ReadyFiles.Count
     $scanButton.Enabled = $count -gt 0
     $clearButton.Enabled = $count -gt 0
@@ -127,6 +139,17 @@ function Refresh-List {
     } else {
         Set-Status "$count files queued in name order."
     }
+}
+
+function Resize-ListColumns {
+    if (-not $list -or $list.Columns.Count -lt 3) {
+        return
+    }
+
+    $available = [Math]::Max(360, $list.ClientSize.Width - 24)
+    $list.Columns[1].Width = 92
+    $list.Columns[2].Width = 150
+    $list.Columns[0].Width = [Math]::Max(180, $available - $list.Columns[1].Width - $list.Columns[2].Width)
 }
 
 function Add-Files {
@@ -209,7 +232,9 @@ function Add-ColumnStyle {
 
 $script:InboxPath = Get-InboxPath
 $iconPath = Get-AppIconPath
+$imagePath = Get-AppImagePath
 $appIcon = $null
+$headerImage = $null
 
 [Windows.Forms.Application]::EnableVisualStyles()
 
@@ -228,13 +253,18 @@ if ($iconPath) {
 } else {
     $form.Icon = [Drawing.SystemIcons]::Application
 }
+if ($imagePath) {
+    $headerImage = [Drawing.Image]::FromFile($imagePath)
+} elseif ($appIcon) {
+    $headerImage = $appIcon.ToBitmap()
+}
 
 $layout = New-Object Windows.Forms.TableLayoutPanel
 $layout.Dock = [Windows.Forms.DockStyle]::Fill
 $layout.ColumnCount = 1
 $layout.RowCount = 5
 $layout.BackColor = $form.BackColor
-Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 76
+Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 72
 Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 52
 Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Absolute) -Height 48
 Add-RowStyle -Panel $layout -SizeType ([Windows.Forms.SizeType]::Percent) -Height 100
@@ -243,31 +273,31 @@ $form.Controls.Add($layout)
 
 $header = New-Object Windows.Forms.Panel
 $header.Dock = [Windows.Forms.DockStyle]::Fill
-$header.BackColor = [Drawing.Color]::FromArgb(30, 64, 175)
+$header.BackColor = [Drawing.Color]::White
 $layout.Controls.Add($header, 0, 0)
 
-if ($appIcon) {
+if ($headerImage) {
     $iconBox = New-Object Windows.Forms.PictureBox
-    $iconBox.Image = $appIcon.ToBitmap()
+    $iconBox.Image = $headerImage
     $iconBox.SizeMode = [Windows.Forms.PictureBoxSizeMode]::StretchImage
-    $iconBox.Size = New-Object Drawing.Size(40, 40)
+    $iconBox.Size = New-Object Drawing.Size(36, 36)
     $iconBox.Location = New-Object Drawing.Point(20, 18)
     $header.Controls.Add($iconBox)
 }
 
 $titleLabel = New-Object Windows.Forms.Label
 $titleLabel.Text = "Virtual Scanner Inbox"
-$titleLabel.ForeColor = [Drawing.Color]::White
+$titleLabel.ForeColor = [Drawing.Color]::FromArgb(15, 23, 42)
 $titleLabel.Font = New-Object Drawing.Font("Segoe UI Semibold", 15)
 $titleLabel.AutoSize = $true
-$titleLabel.Location = New-Object Drawing.Point(74, 14)
+$titleLabel.Location = New-Object Drawing.Point(68, 12)
 $header.Controls.Add($titleLabel)
 
 $subtitleLabel = New-Object Windows.Forms.Label
 $subtitleLabel.Text = "Queue files for your next scan."
-$subtitleLabel.ForeColor = [Drawing.Color]::FromArgb(219, 234, 254)
+$subtitleLabel.ForeColor = [Drawing.Color]::FromArgb(71, 85, 105)
 $subtitleLabel.AutoSize = $true
-$subtitleLabel.Location = New-Object Drawing.Point(76, 43)
+$subtitleLabel.Location = New-Object Drawing.Point(70, 42)
 $header.Controls.Add($subtitleLabel)
 
 $scanButton = New-Object Windows.Forms.Button
@@ -277,8 +307,8 @@ $scanButton.Size = New-Object Drawing.Size(118, 36)
 $scanButton.Anchor = [Windows.Forms.AnchorStyles]::Top -bor [Windows.Forms.AnchorStyles]::Right
 $scanButton.Location = New-Object Drawing.Point(620, 20)
 $scanButton.FlatStyle = [Windows.Forms.FlatStyle]::Flat
-$scanButton.BackColor = [Drawing.Color]::White
-$scanButton.ForeColor = [Drawing.Color]::FromArgb(30, 64, 175)
+$scanButton.BackColor = [Drawing.Color]::FromArgb(30, 64, 175)
+$scanButton.ForeColor = [Drawing.Color]::White
 $scanButton.FlatAppearance.BorderSize = 0
 $scanButton.Add_Click({
     Refresh-List
@@ -311,6 +341,7 @@ $pathBox.Dock = [Windows.Forms.DockStyle]::Fill
 $pathBox.ReadOnly = $true
 $pathBox.BorderStyle = [Windows.Forms.BorderStyle]::FixedSingle
 $pathBox.Text = $script:InboxPath
+$pathBox.TabStop = $false
 $pathPanel.Controls.Add($pathBox, 0, 0)
 
 $openButton = New-Object Windows.Forms.Button
@@ -441,11 +472,13 @@ $form.Add_KeyDown({
 
 $form.Add_Resize({
     $scanButton.Left = [Math]::Max(520, $header.ClientSize.Width - $scanButton.Width - 22)
+    Resize-ListColumns
 })
 
 $form.Add_Shown({
     $removeButton.Enabled = $false
     Refresh-List
+    $addButton.Focus()
 })
 
 try {
