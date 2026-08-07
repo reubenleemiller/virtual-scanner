@@ -236,17 +236,15 @@ static void layout(HWND hwnd)
     int width = rc.right - rc.left;
     int height = rc.bottom - rc.top;
     int margin = 16;
-    int top = 13;
-    MoveWindow(GetDlgItem(hwnd, IDC_PATH), margin, 38, width - 150, 24, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_OPEN), width - 126, 36, 110, 28, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_ADD), margin, 76, 104, 30, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_CLEAR), 128, 76, 104, 30, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_REFRESH), 240, 76, 90, 30, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_REMOVE), 338, 76, 90, 30, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_SCAN), width - 176, 76, 160, 30, TRUE);
-    MoveWindow(GetDlgItem(hwnd, IDC_LIST), margin, 118, width - 32, height - 176, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_PATH), margin, 16, width - 150, 24, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_OPEN), width - 126, 14, 110, 28, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_ADD), margin, 56, 104, 30, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_CLEAR), 128, 56, 104, 30, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_REFRESH), 240, 56, 90, 30, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_REMOVE), 338, 56, 90, 30, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_SCAN), width - 176, 56, 160, 30, TRUE);
+    MoveWindow(GetDlgItem(hwnd, IDC_LIST), margin, 100, width - 32, height - 154, TRUE);
     MoveWindow(GetDlgItem(hwnd, IDC_STATUS), margin, height - 38, width - 32, 24, TRUE);
-    (void)top;
 }
 
 static void signal_scan_ready()
@@ -274,35 +272,27 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         DragAcceptFiles(hwnd, TRUE);
 
         HFONT font = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-        HWND title = CreateWindowW(L"STATIC", L"Virtual Scanner Inbox", WS_CHILD | WS_VISIBLE,
-            48, 13, 260, 22, hwnd, nullptr, g_instance, nullptr);
-        SendMessageW(title, WM_SETFONT, (WPARAM)font, TRUE);
-
-        HWND pic = CreateWindowW(L"STATIC", nullptr, WS_CHILD | WS_VISIBLE | SS_ICON,
-            16, 12, 24, 24, hwnd, nullptr, g_instance, nullptr);
-        SendMessageW(pic, STM_SETICON, (WPARAM)icon, 0);
-
         g_path = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", g_inbox.c_str(), WS_CHILD | WS_VISIBLE | ES_READONLY,
-            16, 38, 470, 24, hwnd, (HMENU)IDC_PATH, g_instance, nullptr);
+            16, 16, 470, 24, hwnd, (HMENU)IDC_PATH, g_instance, nullptr);
         CreateWindowW(L"BUTTON", L"Open Folder", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            494, 36, 110, 28, hwnd, (HMENU)IDC_OPEN, g_instance, nullptr);
+            494, 14, 110, 28, hwnd, (HMENU)IDC_OPEN, g_instance, nullptr);
         CreateWindowW(L"BUTTON", L"Add Files...", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            16, 76, 104, 30, hwnd, (HMENU)IDC_ADD, g_instance, nullptr);
+            16, 56, 104, 30, hwnd, (HMENU)IDC_ADD, g_instance, nullptr);
         g_clear = CreateWindowW(L"BUTTON", L"Clear Ready", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            128, 76, 104, 30, hwnd, (HMENU)IDC_CLEAR, g_instance, nullptr);
+            128, 56, 104, 30, hwnd, (HMENU)IDC_CLEAR, g_instance, nullptr);
         CreateWindowW(L"BUTTON", L"Refresh", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            240, 76, 90, 30, hwnd, (HMENU)IDC_REFRESH, g_instance, nullptr);
+            240, 56, 90, 30, hwnd, (HMENU)IDC_REFRESH, g_instance, nullptr);
         g_remove = CreateWindowW(L"BUTTON", L"Remove", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-            338, 76, 90, 30, hwnd, (HMENU)IDC_REMOVE, g_instance, nullptr);
+            338, 56, 90, 30, hwnd, (HMENU)IDC_REMOVE, g_instance, nullptr);
         g_scan = CreateWindowW(L"BUTTON", L"Scan", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW,
-            430, 76, 160, 30, hwnd, (HMENU)IDC_SCAN, g_instance, nullptr);
+            430, 56, 160, 30, hwnd, (HMENU)IDC_SCAN, g_instance, nullptr);
         g_list = CreateWindowExW(WS_EX_CLIENTEDGE, L"LISTBOX", nullptr,
             WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | LBS_NOTIFY,
-            16, 118, 573, 210, hwnd, (HMENU)IDC_LIST, g_instance, nullptr);
+            16, 100, 573, 210, hwnd, (HMENU)IDC_LIST, g_instance, nullptr);
         g_status = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE,
             16, 342, 573, 24, hwnd, (HMENU)IDC_STATUS, g_instance, nullptr);
 
-        HWND controls[] = { title, g_path, GetDlgItem(hwnd, IDC_OPEN), GetDlgItem(hwnd, IDC_ADD),
+        HWND controls[] = { g_path, GetDlgItem(hwnd, IDC_OPEN), GetDlgItem(hwnd, IDC_ADD),
             g_clear, GetDlgItem(hwnd, IDC_REFRESH), g_remove, g_scan, g_list, g_status };
         for (HWND control : controls) {
             SendMessageW(control, WM_SETFONT, (WPARAM)font, TRUE);
@@ -421,7 +411,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show)
     RegisterClassW(&wc);
 
     g_main = CreateWindowExW(0, wc.lpszClassName, L"Virtual Scanner Inbox",
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 620, 420,
+        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 620, 390,
         nullptr, nullptr, instance, nullptr);
     if (!g_main) {
         return 1;
