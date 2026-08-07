@@ -67,8 +67,34 @@ static void append_log(const char *message)
     CloseHandle(file);
 }
 
+static bool debug_logging_enabled()
+{
+    static int enabled = -1;
+    if (enabled != -1) {
+        return enabled == 1;
+    }
+
+    wchar_t value[16];
+    DWORD len = GetEnvironmentVariableW(L"VIRTUAL_SCANNER_DEBUG", value, 16);
+    if (len == 0 || len >= 16) {
+        enabled = 0;
+        return false;
+    }
+
+    enabled = (wcscmp(value, L"1") == 0 ||
+               _wcsicmp(value, L"true") == 0 ||
+               _wcsicmp(value, L"yes") == 0)
+                  ? 1
+                  : 0;
+    return enabled == 1;
+}
+
 static void log_entry(TW_UINT32 DG, TW_UINT16 DAT, TW_UINT16 MSG, TW_MEMREF pData)
 {
+    if (!debug_logging_enabled()) {
+        return;
+    }
+
     char line[160];
     TW_UINT16 cap = 0;
     if (DAT == DAT_CAPABILITY && pData) {
@@ -1091,16 +1117,6 @@ static TW_UINT16 handle_userinterface(TW_UINT16 MSG)
     if (MSG == MSG_ENABLEDS || MSG == MSG_ENABLEDSUIONLY) {
         if (!g_open) {
             return return_failure(TWCC_SEQERROR);
-        }
-        if (!scan_signal_exists()) {
-            launch_inbox_helper();
-            g_enabled = 1;
-            g_xfer_ready_posted = 0;
-            g_inbox_helper_launched = 1;
-            g_waiting_for_scan_signal = 1;
-            g_pending_images = 0;
-            set_status(TWCC_SUCCESS);
-            return TWRC_SUCCESS;
         }
         if (!select_next_page()) {
             launch_inbox_helper();

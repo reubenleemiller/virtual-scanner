@@ -212,8 +212,9 @@
               type="button"
               class="download-button"
               data-download
+              data-asset="x86-setup"
               data-label="x86 installer"
-              data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe"
+              data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.3/VirtualScanner-1.5.3-x86-setup.exe"
             >
               <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
               <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
@@ -314,7 +315,7 @@
               <h2 class="mt-2 text-3xl font-black text-ink sm:text-4xl">Choose your Windows build</h2>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row">
-              <a class="secondary-button" href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2">
+              <a class="secondary-button" data-release-link href="https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.3">
               <span class="mini-spinner" aria-hidden="true"></span>
               <i class="fa-brands fa-github button-icon" aria-hidden="true"></i>
               <span class="button-label">Release notes</span>
@@ -322,40 +323,70 @@
             </div>
           </div>
 
-          <div class="mt-8 grid gap-4 lg:grid-cols-3">
-            <article class="download-card">
-              <span class="badge">Most legacy apps</span>
-              <i class="fa-solid fa-microchip download-icon" aria-hidden="true"></i>
-              <h3>x86 installer</h3>
-              <p>For 32-bit TWAIN applications on Windows, including many older desktop workflows.</p>
-              <button type="button" class="download-button w-full" data-download data-label="x86 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x86-setup.exe">
-                <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
-                <span class="button-label">Download x86</span>
-              </button>
-            </article>
-            <article class="download-card">
-              <span class="badge">64-bit apps</span>
-              <i class="fa-solid fa-desktop download-icon" aria-hidden="true"></i>
-              <h3>x64 installer</h3>
-              <p>For 64-bit Intel TWAIN applications running on Windows x64 or emulated ARM64.</p>
-              <button type="button" class="download-button w-full" data-download data-label="x64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-x64-setup.exe">
-                <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
-                <span class="button-label">Download x64</span>
-              </button>
-            </article>
-            <article class="download-card">
-              <span class="badge">Native ARM64</span>
-              <i class="fa-solid fa-bolt download-icon" aria-hidden="true"></i>
-              <h3>ARM64 installer</h3>
-              <p>For native ARM64 TWAIN applications with a native ARM64 TWAIN DSM.</p>
-              <button type="button" class="download-button w-full" data-download data-label="ARM64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.2/VirtualScanner-1.5.2-arm64-setup.exe">
-                <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
-                <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
-                <span class="button-label">Download ARM64</span>
-              </button>
-            </article>
+          <div class="mt-8 inline-flex rounded-lg border border-sky-100 bg-white p-1 shadow-sm" role="tablist" aria-label="Download versions">
+            <button type="button" class="rounded-md bg-reef px-4 py-2 text-sm font-bold text-white" role="tab" aria-selected="true" aria-controls="latest-downloads" data-download-tab="latest">Latest version</button>
+            <button type="button" class="rounded-md px-4 py-2 text-sm font-bold text-slate-600" role="tab" aria-selected="false" aria-controls="previous-downloads" data-download-tab="previous">Previous versions</button>
+          </div>
+
+          <div id="latest-downloads" class="mt-6" role="tabpanel">
+            <div class="grid gap-4 lg:grid-cols-3">
+              <article class="download-card">
+                <span class="badge">Most legacy apps</span>
+                <i class="fa-solid fa-microchip download-icon" aria-hidden="true"></i>
+                <h3>x86 installer</h3>
+                <p>For 32-bit TWAIN applications on Windows, including many older desktop workflows.</p>
+                <button type="button" class="download-button w-full" data-download data-asset="x86-setup" data-label="x86 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.3/VirtualScanner-1.5.3-x86-setup.exe">
+                  <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                  <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
+                  <span class="button-label">Download x86</span>
+                </button>
+              </article>
+              <article class="download-card">
+                <span class="badge">64-bit apps</span>
+                <i class="fa-solid fa-desktop download-icon" aria-hidden="true"></i>
+                <h3>x64 installer</h3>
+                <p>For 64-bit Intel TWAIN applications running on Windows x64 or emulated ARM64.</p>
+                <button type="button" class="download-button w-full" data-download data-asset="x64-setup" data-label="x64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.3/VirtualScanner-1.5.3-x64-setup.exe">
+                  <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                  <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
+                  <span class="button-label">Download x64</span>
+                </button>
+              </article>
+              <article class="download-card">
+                <span class="badge">Native ARM64</span>
+                <i class="fa-solid fa-bolt download-icon" aria-hidden="true"></i>
+                <h3>ARM64 installer</h3>
+                <p>For native ARM64 TWAIN applications with a native ARM64 TWAIN DSM.</p>
+                <button type="button" class="download-button w-full" data-download data-asset="arm64-setup" data-label="ARM64 installer" data-url="https://github.com/reubenleemiller/virtual-scanner/releases/download/v1.5.3/VirtualScanner-1.5.3-arm64-setup.exe">
+                  <span class="progress-ring" aria-hidden="true"><span class="progress-text">0%</span></span>
+                  <i class="fa-solid fa-download button-icon" aria-hidden="true"></i>
+                  <span class="button-label">Download ARM64</span>
+                </button>
+              </article>
+            </div>
+          </div>
+
+          <div id="previous-downloads" class="mt-6 hidden" role="tabpanel" hidden>
+            <div class="overflow-hidden rounded-lg border border-sky-100 bg-white shadow-sm">
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[720px] text-left text-sm">
+                  <thead class="bg-sky-50 text-xs uppercase tracking-[.18em] text-slate-600">
+                    <tr>
+                      <th class="px-4 py-3">Version</th>
+                      <th class="px-4 py-3">Date</th>
+                      <th class="px-4 py-3">Installers</th>
+                      <th class="px-4 py-3">Checksums</th>
+                      <th class="px-4 py-3">Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previous-releases-body" class="divide-y divide-slate-100 text-slate-700">
+                    <tr>
+                      <td class="px-4 py-4" colspan="5">Loading previous versions...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -569,6 +600,11 @@
       const modalExtra = document.querySelector("#modal-extra");
       const modalOpenLink = document.querySelector("#modal-open-link");
       const downloadButtons = document.querySelectorAll("[data-download]");
+      const releaseLinks = document.querySelectorAll("[data-release-link]");
+      const downloadTabs = document.querySelectorAll("[data-download-tab]");
+      const latestDownloadsPanel = document.querySelector("#latest-downloads");
+      const previousDownloadsPanel = document.querySelector("#previous-downloads");
+      const previousReleasesBody = document.querySelector("#previous-releases-body");
       const actionButtons = document.querySelectorAll("[data-action-button]");
       const modalButtons = document.querySelectorAll("[data-modal]");
       const githubButtons = document.querySelectorAll("[data-github-modal]");
@@ -577,6 +613,8 @@
       const contactForm = document.querySelector("#contact-form");
       const contactStatus = document.querySelector("#contact-status");
       const contactSubmit = document.querySelector("#contact-submit");
+      let latestReleaseUrl = "https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.3";
+      let latestReleaseTag = "v1.5.3";
       let lastFocusedElement = null;
 
       function escapeHtml(value) {
@@ -744,6 +782,105 @@
         </div>`;
       }
 
+      function assetFor(release, key) {
+        const assets = release?.assets || [];
+        const patterns = {
+          "x86-setup": /-x86-setup\.exe$/i,
+          "x64-setup": /-x64-setup\.exe$/i,
+          "arm64-setup": /-arm64-setup\.exe$/i,
+          checksums: /^SHA256SUMS\.txt$/i,
+        };
+        return assets.find((asset) => patterns[key]?.test(asset.name));
+      }
+
+      function setLatestRelease(release) {
+        if (!release) return;
+        latestReleaseTag = release.tag_name || latestReleaseTag;
+        latestReleaseUrl = release.html_url || latestReleaseUrl;
+        releaseLinks.forEach((link) => {
+          link.href = latestReleaseUrl;
+        });
+        downloadButtons.forEach((button) => {
+          const asset = assetFor(release, button.dataset.asset);
+          if (asset?.browser_download_url) {
+            button.dataset.url = asset.browser_download_url;
+          }
+        });
+      }
+
+      async function loadLatestRelease() {
+        try {
+          const response = await fetch(`${GITHUB_BASE}/releases/latest`, { headers: { accept: "application/vnd.github+json" } });
+          if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+          setLatestRelease(await response.json());
+        } catch {
+          releaseLinks.forEach((link) => {
+            link.href = latestReleaseUrl;
+          });
+        }
+      }
+
+      function assetLink(asset, label) {
+        if (!asset) {
+          return `<span class="text-slate-400">${label}</span>`;
+        }
+        return `<a class="font-bold text-reef hover:text-ink" href="${escapeHtml(asset.browser_download_url)}">${label}</a>`;
+      }
+
+      function renderPreviousReleases(releases) {
+        const previous = releases.filter((release) => !release.draft && release.tag_name !== latestReleaseTag);
+        if (!previous.length) {
+          previousReleasesBody.innerHTML = `<tr><td class="px-4 py-4" colspan="5">No previous versions are published yet.</td></tr>`;
+          return;
+        }
+
+        previousReleasesBody.innerHTML = previous.map((release) => {
+          const date = new Date(release.published_at || release.created_at).toLocaleDateString();
+          const x86 = assetFor(release, "x86-setup");
+          const x64 = assetFor(release, "x64-setup");
+          const arm64 = assetFor(release, "arm64-setup");
+          const checksums = assetFor(release, "checksums");
+          return `<tr>
+            <td class="px-4 py-4 font-black text-ink">${escapeHtml(release.tag_name)}</td>
+            <td class="px-4 py-4">${escapeHtml(date)}</td>
+            <td class="px-4 py-4">
+              <div class="flex flex-wrap gap-3">
+                ${assetLink(x86, "x86")}
+                ${assetLink(x64, "x64")}
+                ${assetLink(arm64, "ARM64")}
+              </div>
+            </td>
+            <td class="px-4 py-4">${assetLink(checksums, "SHA256")}</td>
+            <td class="px-4 py-4"><a class="font-bold text-reef hover:text-ink" href="${escapeHtml(release.html_url)}">Release notes</a></td>
+          </tr>`;
+        }).join("");
+      }
+
+      async function loadPreviousReleases() {
+        try {
+          const response = await fetch(`${GITHUB_BASE}/releases?per_page=20`, { headers: { accept: "application/vnd.github+json" } });
+          if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+          renderPreviousReleases(await response.json());
+        } catch {
+          previousReleasesBody.innerHTML = `<tr><td class="px-4 py-4" colspan="5">Previous versions could not be loaded. Open the release notes link for the full archive.</td></tr>`;
+        }
+      }
+
+      function showDownloadTab(tab) {
+        const showingPrevious = tab === "previous";
+        latestDownloadsPanel.hidden = showingPrevious;
+        latestDownloadsPanel.classList.toggle("hidden", showingPrevious);
+        previousDownloadsPanel.hidden = !showingPrevious;
+        previousDownloadsPanel.classList.toggle("hidden", !showingPrevious);
+        downloadTabs.forEach((button) => {
+          const selected = button.dataset.downloadTab === tab;
+          button.setAttribute("aria-selected", selected ? "true" : "false");
+          button.classList.toggle("bg-reef", selected);
+          button.classList.toggle("text-white", selected);
+          button.classList.toggle("text-slate-600", !selected);
+        });
+      }
+
       function infoState(kind) {
         const map = {
           source: {
@@ -759,7 +896,7 @@
             title: "Latest release",
             body: "The latest release page contains the Windows installer downloads, portable ZIP files, and checksums generated by the release workflow.",
             extra: `<div class="modal-note"><i class="fa-solid fa-shield-halved"></i><p>Use the checksum file on the release page when you want to verify a downloaded installer or ZIP.</p></div>`,
-            link: "https://github.com/reubenleemiller/virtual-scanner/releases/tag/v1.5.2",
+            link: latestReleaseUrl,
             linkLabel: "Open release",
           },
           license: {
@@ -967,6 +1104,7 @@
       }
 
       downloadButtons.forEach((button) => button.addEventListener("click", () => startDownload(button)));
+      downloadTabs.forEach((button) => button.addEventListener("click", () => showDownloadTab(button.dataset.downloadTab)));
       modalButtons.forEach((button) => button.addEventListener("click", () => pulseButton(button, () => openModal(button))));
       githubButtons.forEach((button) => button.addEventListener("click", () => openGithubModal(button.dataset.githubModal)));
       infoButtons.forEach((button) => button.addEventListener("click", () => openInfoModal(button.dataset.infoModal)));
@@ -1013,6 +1151,8 @@
       } else {
         revealItems.forEach((item) => item.classList.add("is-visible"));
       }
+
+      loadLatestRelease().then(loadPreviousReleases);
     </script>
   </body>
 </html>
