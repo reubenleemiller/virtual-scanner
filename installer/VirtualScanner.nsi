@@ -1,5 +1,5 @@
 !ifndef VERSION
-!define VERSION "1.5.3"
+!define VERSION "1.5.4"
 !endif
 !ifndef SOURCE_DIR
 !define SOURCE_DIR "."
@@ -59,9 +59,8 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_TITLE "${APP_NAME} is ready"
 !define MUI_FINISHPAGE_TEXT "The virtual scanner data source and inbox shortcut were installed successfully."
-!define MUI_FINISHPAGE_RUN "$WINDIR\System32\wscript.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\VirtualScannerInbox.exe"
 !define MUI_FINISHPAGE_RUN_TEXT "Open Virtual Scanner Inbox"
-!define MUI_FINISHPAGE_RUN_PARAMETERS "$\"$INSTDIR\VirtualScannerInbox.vbs$\""
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -77,6 +76,7 @@ Section "Virtual Scanner" SEC_APP
 
     SetOutPath "$INSTDIR"
     File "${SOURCE_DIR}/dist/${ARCH}/VirtualScanner.ds"
+    File "${SOURCE_DIR}/dist/${ARCH}/VirtualScannerInbox.exe"
     File "${SOURCE_DIR}/app/VirtualScannerInbox.ps1"
     File "${SOURCE_DIR}/app/VirtualScannerInbox.vbs"
     File "${SOURCE_DIR}/app/VirtualScanner.ico"
@@ -94,9 +94,9 @@ Section "Virtual Scanner" SEC_APP
     SetOutPath "$INSTDIR"
     CreateDirectory "$SMPROGRAMS\${STARTMENU_FOLDER}"
     WriteUninstaller "$INSTDIR\Uninstall.exe"
-    CreateShortCut "$SMPROGRAMS\${STARTMENU_FOLDER}\Virtual Scanner Inbox.lnk" "$WINDIR\System32\wscript.exe" "$\"$INSTDIR\VirtualScannerInbox.vbs$\"" "$INSTDIR\VirtualScanner.ico" 0
+    CreateShortCut "$SMPROGRAMS\${STARTMENU_FOLDER}\Virtual Scanner Inbox.lnk" "$INSTDIR\VirtualScannerInbox.exe" "" "$INSTDIR\VirtualScanner.ico" 0
     CreateShortCut "$SMPROGRAMS\${STARTMENU_FOLDER}\Uninstall Virtual Scanner.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\VirtualScanner.ico" 0
-    CreateShortCut "$DESKTOP\Virtual Scanner Inbox.lnk" "$WINDIR\System32\wscript.exe" "$\"$INSTDIR\VirtualScannerInbox.vbs$\"" "$INSTDIR\VirtualScanner.ico" 0
+    CreateShortCut "$DESKTOP\Virtual Scanner Inbox.lnk" "$INSTDIR\VirtualScannerInbox.exe" "" "$INSTDIR\VirtualScanner.ico" 0
 
     WriteRegStr HKLM "${UNINSTALL_KEY}" "DisplayName" "${APP_NAME} ${ARCH}"
     WriteRegStr HKLM "${UNINSTALL_KEY}" "DisplayVersion" "${VERSION}"
@@ -123,6 +123,7 @@ Section "Uninstall"
     Delete "$INSTDIR\VirtualScanner-icon.png"
     Delete "$INSTDIR\VirtualScannerInbox.vbs"
     Delete "$INSTDIR\VirtualScannerInbox.ps1"
+    Delete "$INSTDIR\VirtualScannerInbox.exe"
     Delete "$INSTDIR\VirtualScanner.ds"
     Delete "$INSTDIR\LICENSE"
     Delete "$INSTDIR\NOTICE"

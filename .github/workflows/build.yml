@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version to build, for example 1.5.3"
+        description: "Version to build, for example 1.5.4"
         required: false
         type: string
 
@@ -36,7 +36,7 @@ jobs:
           elif [[ -n "${{ inputs.version || '' }}" ]]; then
             version="${{ inputs.version }}"
           else
-            version="1.5.3"
+            version="1.5.4"
           fi
           echo "version=${version}" >>"${GITHUB_OUTPUT}"
 

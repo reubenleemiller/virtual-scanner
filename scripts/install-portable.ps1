@@ -25,6 +25,10 @@ New-Item -ItemType Directory -Force $inbox | Out-Null
 New-Item -ItemType Directory -Force (Join-Path $inbox "Scanned") | Out-Null
 
 Copy-Item $sourceDs (Join-Path $installDir "VirtualScanner.ds") -Force
+$sourceInboxExe = Join-Path $sourceRoot "VirtualScannerInbox.exe"
+if (Test-Path $sourceInboxExe) {
+    Copy-Item $sourceInboxExe (Join-Path $installDir "VirtualScannerInbox.exe") -Force
+}
 Copy-Item (Join-Path $sourceRoot "VirtualScannerInbox.ps1") (Join-Path $installDir "VirtualScannerInbox.ps1") -Force
 Copy-Item (Join-Path $sourceRoot "VirtualScannerInbox.vbs") (Join-Path $installDir "VirtualScannerInbox.vbs") -Force
 Copy-Item (Join-Path $sourceRoot "VirtualScanner.ico") (Join-Path $installDir "VirtualScanner.ico") -Force
@@ -38,7 +42,10 @@ if (Test-Path $iconPng) {
 $desktop = [Environment]::GetFolderPath("DesktopDirectory")
 $startMenu = [Environment]::GetFolderPath("Programs")
 $wscript = Join-Path $env:WINDIR "System32\wscript.exe"
-$launcher = Join-Path $installDir "VirtualScannerInbox.vbs"
+$launcher = Join-Path $installDir "VirtualScannerInbox.exe"
+if (-not (Test-Path $launcher)) {
+    $launcher = Join-Path $installDir "VirtualScannerInbox.vbs"
+}
 $icon = Join-Path $installDir "VirtualScanner.ico"
 
 $shell = New-Object -ComObject WScript.Shell
@@ -47,8 +54,13 @@ foreach ($shortcutPath in @(
     (Join-Path $startMenu "Virtual Scanner Inbox.lnk")
 )) {
     $shortcut = $shell.CreateShortcut($shortcutPath)
-    $shortcut.TargetPath = $wscript
-    $shortcut.Arguments = "`"$launcher`""
+    if ([IO.Path]::GetExtension($launcher).Equals(".exe", [StringComparison]::OrdinalIgnoreCase)) {
+        $shortcut.TargetPath = $launcher
+        $shortcut.Arguments = ""
+    } else {
+        $shortcut.TargetPath = $wscript
+        $shortcut.Arguments = "`"$launcher`""
+    }
     $shortcut.IconLocation = "$icon,0"
     $shortcut.Save()
 }

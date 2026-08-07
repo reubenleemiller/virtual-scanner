@@ -110,8 +110,8 @@ Every push to `main` and every pull request runs the CI build and uploads the
 generated files as workflow artifacts. To publish a release, push a version tag:
 
 ```sh
-git tag v1.5.3
-git push origin v1.5.3
+git tag v1.5.4
+git push origin v1.5.4
 ```
 
 The tag build creates a GitHub Release and attaches the generated installers and
@@ -281,7 +281,7 @@ Run this from the project folder on your Mac:
 ```sh
 cd "$HOME/Documents/virtual-scanner"
 
-VERSION="1.5.3"
+VERSION="1.5.4"
 gcloud builds submit . \
   --config cloudbuild.yaml \
   --substitutions "_ARTIFACT_BUCKET=${BUCKET},_VERSION=${VERSION}"
@@ -297,7 +297,7 @@ export SIGN_CERT_PASSWORD="CERTIFICATE_PASSWORD"
 export SIGN_NAME="Reuben Miller"
 export SIGN_DESCRIPTION="Virtual Scanner"
 
-VERSION="1.5.3" scripts/build-installer.sh
+VERSION="1.5.4" scripts/build-installer.sh
 ```
 
 CI builds can set `SIGN_CERT_BASE64` instead of `SIGN_CERT_PATH`; the build
@@ -343,7 +343,7 @@ gcloud storage cp \
 Copy this file to the Windows computer and run it as Administrator:
 
 ```text
-VirtualScanner-1.5.3-x86-setup.exe
+VirtualScanner-1.5.4-x86-setup.exe
 ```
 
 Use `x86` if the TWAIN application is installed under
@@ -353,12 +353,12 @@ Use `arm64` only for a native ARM64 TWAIN app.
 Other generated files are also available:
 
 ```text
-VirtualScanner-1.5.3-arm64-setup.exe
-VirtualScanner-1.5.3-x64-setup.exe
-VirtualScanner-1.5.3-x86-setup.exe
-VirtualScanner-1.5.3-arm64-portable.zip
-VirtualScanner-1.5.3-x64-portable.zip
-VirtualScanner-1.5.3-x86-portable.zip
+VirtualScanner-1.5.4-arm64-setup.exe
+VirtualScanner-1.5.4-x64-setup.exe
+VirtualScanner-1.5.4-x86-setup.exe
+VirtualScanner-1.5.4-arm64-portable.zip
+VirtualScanner-1.5.4-x64-portable.zip
+VirtualScanner-1.5.4-x86-portable.zip
 ```
 
 The portable ZIP avoids the installer executable. Extract it on Windows, open

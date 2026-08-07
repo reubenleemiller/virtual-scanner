@@ -567,21 +567,28 @@ static void launch_inbox_helper()
         return;
     }
 
-    std::wstring launcher = module_folder + L"\\VirtualScannerInbox.vbs";
+    std::wstring launcher = module_folder + L"\\VirtualScannerInbox.exe";
     if (GetFileAttributesW(launcher.c_str()) == INVALID_FILE_ATTRIBUTES) {
-        append_log("Inbox helper launch skipped: launcher not found");
-        return;
+        launcher = module_folder + L"\\VirtualScannerInbox.vbs";
+        if (GetFileAttributesW(launcher.c_str()) == INVALID_FILE_ATTRIBUTES) {
+            append_log("Inbox helper launch skipped: launcher not found");
+            return;
+        }
     }
 
     wchar_t system_dir[MAX_PATH];
     UINT system_len = GetSystemDirectoryW(system_dir, MAX_PATH);
-    std::wstring wscript = L"wscript.exe";
-    if (system_len > 0 && system_len < MAX_PATH) {
-        wscript = std::wstring(system_dir) + L"\\wscript.exe";
+    std::wstring host;
+    if (lowercase(launcher).find(L".vbs") != std::wstring::npos) {
+        host = L"wscript.exe";
+        if (system_len > 0 && system_len < MAX_PATH) {
+            host = std::wstring(system_dir) + L"\\wscript.exe";
+        }
     }
 
-    std::wstring command =
-        shell_quote(wscript) + L" " + shell_quote(launcher);
+    std::wstring command = host.empty()
+        ? shell_quote(launcher)
+        : shell_quote(host) + L" " + shell_quote(launcher);
 
     STARTUPINFOW startup;
     PROCESS_INFORMATION process;
